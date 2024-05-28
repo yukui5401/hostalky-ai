@@ -62,7 +62,7 @@ const Notes = () => {
                 <button type="submit">Submit</button>
             </form>
 
-            <h3>Title: {data.title}</h3>
+            <h3>{data.title}</h3>
             <p>{data.summary}</p>
         </div>
             
