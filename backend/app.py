@@ -40,7 +40,7 @@ def get_note():
 # reminder page
 @app.route('/reminder', methods=['POST'])
 def get_reminder():
-        # data validation
+    # data validation
     if not request.is_json:
         return jsonify({'error': 'Request must be JSON'}), 401
     
@@ -63,6 +63,34 @@ def get_reminder():
         'date_time':date_time,
     }
     return jsonify(response)
+
+# announce page
+@app.route('/announce', methods=['POST'])
+def get_announce():
+    # data validation
+    if not request.is_json():
+        return jsonify({'error': 'Request must be JSON'}), 401
+    
+    data = request.get_json()
+
+    if not data:
+        return jsonify({'error': 'Request JSON is empty'}), 402
+    
+    title = data.get('title')
+    summary = data.get('summary')
+    id_list = data.get('id_list') # list of &CareIDs
+
+    if not title or not summary or not id_list:
+        return jsonify({'error': 'All three title, summary, and list of &CareIDs are required'}), 403
+    
+    # data processing
+    response = {
+        'title':title,
+        'summary':summary + summary,
+        'id_list':id_list, # array
+    }
+
+    return response
 
 # text-to-text summarization
 def transcribe(title, summary):

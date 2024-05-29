@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { MultiSelect } from "react-multi-select-component";
 
 const Announce = () => {
+    const [selected, setSelected] = useState([]);
+
+    const options = [
+        {label: "brookeyang", value: "&brookeyang"},
+        {label: "ross", value: "&ross"},
+        {label: "pratheepan", value: "&pratheepan"},
+    ]
+
     // useState for storing and using data
     const [data, setData] = useState({
         title: "",
@@ -38,7 +47,21 @@ const Announce = () => {
         <>
         <div className="center">
             <h2>Announcement</h2>
+                           
             <form onSubmit={handleSubmit}>
+                <div className="recipients">
+                    <h6>
+                        <MultiSelect
+                            options={options}
+                            value={selected}
+                            onChange={setSelected}
+                            labelledBy="Select"
+                            overrideStrings={{ "selectSomeItems": "Select recipients"}}
+                            required
+                        />
+                    </h6>
+                </div>
+                
                 <textarea
                     type="text"
                     name="title"
