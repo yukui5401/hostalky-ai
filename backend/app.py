@@ -3,6 +3,13 @@ from flask import Flask, request, jsonify
 from openai import OpenAI
 import time
 import datetime
+
+import sounddevice # for audio recording
+from scipy.io.wavfile import write # for saving recorded audio
+from pydub import AudioSegment
+
+fs = 44100 # sample rate, for audio quality
+
 client = OpenAI()
 
 # initialize Flask app
@@ -34,7 +41,7 @@ def get_note():
     
     
     # data processing
-    response = transcribe(title, summary) # JSON object
+    response = rephrase(title, summary) # JSON object
     
     return response
 
@@ -91,7 +98,7 @@ def get_announce():
     #     'summary':summary,
     # }
 
-    response = transcribe(title, summary)
+    response = rephrase(title, summary)
     response = json.loads(response) # convert JSON into dictionary
     id_list.append({"key":"value"}) # testing purposes
     response["id_list"] = id_list # add id_list key-value pair
@@ -99,7 +106,7 @@ def get_announce():
     return jsonify(response)
 
 # text-to-text summarization
-def transcribe(title, summary):
+def rephrase(title, summary):
     field_of_study = title
     transcription = summary
 
@@ -130,5 +137,44 @@ def set_reminder(title, summary, date_time): # implementation postponed
 
 
 # run app
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
+
+
+
+##########################################################
+# speech-to-text endpoint
+
+# API (paid) version #################
+def transcribe():
+    audio_file = open("audio_test.m4a", "rb")
+    transcript = client.audio.transcriptions.create(
+    model="whisper-1",
+    file=audio_file,
+    # print(transcript.text)
+)
+
+def record_audio():
+    second = int(input("Enter recording time in seconds: "))
+    print("Recording...\n")
+
+    # record live audio
+    record_audio = sounddevice.rec(int(second * fs), samplerate=fs, channels=1)
+    sounddevice.wait()
+    write("liverecording.wav",fs,record_audio)
+
+    # convert audio to an AudioSegment
+    audio = AudioSegment.from_wav('liverecording.wav')
+
+    # save audio as mp3 file
+    audio.export('liverecording.mp3',format='mp3')
+
+    # print(sounddevice.query_devices)
+
+    print("Recording completed")
+
+# Local (free) version ##############
+# model = whisper.load_model("base")
+# result = model.transcribe("translate_test.m4a")
+# print(result)
+# print(result["text"])

@@ -31,7 +31,7 @@ const Layout = () => {
                     <Link to="/announce">Announce</Link>
                 </h6>
             </nav>
-            <h6>Last updated: {data.date} </h6>
+            <h6>Last refreshed: {data.date} </h6>
             <h6>Experience a positive working environment like never before with a dependable healthcare communication app</h6>
         </header>
     </>

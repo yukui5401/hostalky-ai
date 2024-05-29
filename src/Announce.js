@@ -98,7 +98,7 @@ const Announce = () => {
                 <br />
                 <button type="submit">Submit</button>
             </form>
-            <p>{JSON.stringify(data.id_list)}</p>
+            <p>JSON recipient data: {JSON.stringify(data.id_list)}</p>
             <h3>{data.title}</h3>
             <p>{data.summary}</p>   
         </div>
