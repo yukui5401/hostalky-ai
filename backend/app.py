@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request, jsonify
 from openai import OpenAI
 import time
@@ -68,7 +69,7 @@ def get_reminder():
 @app.route('/announce', methods=['POST'])
 def get_announce():
     # data validation
-    if not request.is_json():
+    if not request.is_json:
         return jsonify({'error': 'Request must be JSON'}), 401
     
     data = request.get_json()
@@ -76,21 +77,26 @@ def get_announce():
     if not data:
         return jsonify({'error': 'Request JSON is empty'}), 402
     
+    id_list = data.get('id_list') # list of &CareIDs
     title = data.get('title')
     summary = data.get('summary')
-    id_list = data.get('id_list') # list of &CareIDs
 
     if not title or not summary or not id_list:
         return jsonify({'error': 'All three title, summary, and list of &CareIDs are required'}), 403
     
     # data processing
-    response = {
-        'title':title,
-        'summary':summary + summary,
-        'id_list':id_list, # array
-    }
+    # response = {
+    #     'id_list':id_list, # array
+    #     'title':title,
+    #     'summary':summary,
+    # }
 
-    return response
+    response = transcribe(title, summary)
+    response = json.loads(response) # convert JSON into dictionary
+    id_list.append({"key":"value"}) # testing purposes
+    response["id_list"] = id_list # add id_list key-value pair
+
+    return jsonify(response)
 
 # text-to-text summarization
 def transcribe(title, summary):
@@ -98,7 +104,7 @@ def transcribe(title, summary):
     transcription = summary
 
     messages = [
-        {"role": "user", "content": "Articulate the following.\n" + transcription + "Then, return a JSON object with labels 'title' and 'summary'."},
+        {"role": "user", "content": "Articulate the following.\n" + transcription + " Then, return a JSON object with labels 'title' and 'summary'."},
         {"role": "system", "content": "You are an AI health assistant for: " + field_of_study}
     ]
     start_time = time.time()
@@ -116,14 +122,13 @@ def transcribe(title, summary):
     new_response = response.choices[0].message.content.strip()
     # print(response.choices[0].message.content.strip())
 
-    return new_response
+    return new_response # JSON object
 
 # formatting reminder
 def set_reminder(title, summary, date_time): # implementation postponed
     return
 
+
 # run app
 if __name__ == '__main__':
     app.run(debug=True)
-
-  

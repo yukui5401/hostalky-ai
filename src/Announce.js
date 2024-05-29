@@ -13,9 +13,17 @@ const Announce = () => {
 
     // useState for storing and using data
     const [data, setData] = useState({
+        id_list: [],
         title: "",
         summary: "",
     });
+
+    useEffect(() => {
+        setData((prevData) => ({
+            ...prevData,
+            id_list: selected,
+        }));
+    }, [selected]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -30,7 +38,7 @@ const Announce = () => {
         setFormSubmitted(true);
         if (selected.length === 0) return;
 
-        const response = await fetch("/notes", {
+        const response = await fetch("/announce", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -68,9 +76,6 @@ const Announce = () => {
                     </h6>
                 </div>
 
-                <pre>{JSON.stringify(selected)}</pre> 
-                    {/* test code: outputting JSON data for recipients */}
-
                 <textarea
                     type="text"
                     name="title"
@@ -93,6 +98,7 @@ const Announce = () => {
                 <br />
                 <button type="submit">Submit</button>
             </form>
+            <p>{JSON.stringify(data.id_list)}</p>
             <h3>{data.title}</h3>
             <p>{data.summary}</p>   
         </div>
