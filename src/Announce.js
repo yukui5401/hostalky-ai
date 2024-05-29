@@ -3,8 +3,9 @@ import { MultiSelect } from "react-multi-select-component";
 
 const Announce = () => {
     const [selected, setSelected] = useState([]);
+    const [formSubmitted, setFormSubmitted] = useState(false);
 
-    const options = [
+    const recipients = [
         {label: "brookeyang", value: "&brookeyang"},
         {label: "ross", value: "&ross"},
         {label: "pratheepan", value: "&pratheepan"},
@@ -26,6 +27,9 @@ const Announce = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setFormSubmitted(true);
+        if (selected.length === 0) return;
+
         const response = await fetch("/notes", {
             method: "POST",
             headers: {
@@ -47,21 +51,26 @@ const Announce = () => {
         <>
         <div className="center">
             <h2>Announcement</h2>
-                           
             <form onSubmit={handleSubmit}>
-                <div className="recipients">
+                <div className="recipients-style">
                     <h6>
                         <MultiSelect
-                            options={options}
+                            options={recipients}
                             value={selected}
                             onChange={setSelected}
                             labelledBy="Select"
                             overrideStrings={{ "selectSomeItems": "Select recipients"}}
                             required
                         />
+                        {formSubmitted && selected.length === 0 && (
+                            <div style={{ color: 'red' }}><br />Please select at least one recipient.</div>
+                        )}
                     </h6>
                 </div>
-                
+
+                <pre>{JSON.stringify(selected)}</pre> 
+                    {/* test code: outputting JSON data for recipients */}
+
                 <textarea
                     type="text"
                     name="title"
@@ -84,7 +93,6 @@ const Announce = () => {
                 <br />
                 <button type="submit">Submit</button>
             </form>
-
             <h3>{data.title}</h3>
             <p>{data.summary}</p>   
         </div>
@@ -93,3 +101,4 @@ const Announce = () => {
 };
   
 export default Announce;
+
