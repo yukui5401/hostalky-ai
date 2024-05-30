@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-var btnStart, btnStop, audio;
 
 const Notes = () => {
 
@@ -29,8 +28,17 @@ const Notes = () => {
                     alert(e.error);
                 };
 
-                mediaRecorder.onstop = () => {
-                    let blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
+                mediaRecorder.onstop = async () => {
+                    let blob = new Blob(chunks, { 'type': 'audio/mpeg; codecs=mp3' });
+                    // options:
+                    // audio/ogg; codecs=opus
+                    // audio/mpeg; codecs=mp3
+                    // audio/wav; codecs=pcm
+
+                    // Call uploadAudio to send the recorded audio to the backend
+                    await uploadAudio(blob);
+
+                    // Set the src attribute of the audio element for local playback
                     let url = URL.createObjectURL(blob);
                     audio.src = url;
                 };
@@ -43,6 +51,28 @@ const Notes = () => {
             }
         };
 
+        const uploadAudio = async (audioBlob) => {
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob);
+
+                const response = await fetch('/record', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    setData(responseData);
+                    console.log('Audio uploaded successfully');
+                } else {
+                    console.error('Failed to upload audio');
+                }
+            } catch (error) {
+                console.error('Error uploading audio:', error);
+            }
+        };
+
         btnStart.addEventListener('click', handleStartClick);
 
         // Cleanup event listeners on component unmount
@@ -50,14 +80,6 @@ const Notes = () => {
             btnStart.removeEventListener('click', handleStartClick);
         };
     }, []);
-
-
-
-
-
-
-
-
 
 
 

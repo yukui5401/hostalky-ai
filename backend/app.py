@@ -1,3 +1,4 @@
+import io
 import json
 from flask import Flask, request, jsonify
 from openai import OpenAI
@@ -7,6 +8,7 @@ import datetime
 import sounddevice # for audio recording
 from scipy.io.wavfile import write # for saving recorded audio
 from pydub import AudioSegment
+from io import BytesIO
 
 fs = 44100 # sample rate, for audio quality
 
@@ -157,27 +159,40 @@ def transcribe(audio):
     }
     return jsonify(response)
 
-@app.route('/record')
+@app.route('/record', methods=['POST'])
 def get_record():
-    wav_file = "liverecording.wav"
-    mp3_file = "liverecording.mp3"
-    second = int(input("Enter recording time in seconds: "))
-    print("Recording...\n")
+    # data validation
+    if 'audio' not in request.files:
+        return jsonify({'error':'no audio file received'}), 400
+    
+    audio_file = request.files['audio'] # .FileStorage file
+    audio_content = audio_file.read() # byte file
 
-    # record live audio
-    record_audio = sounddevice.rec(int(second * fs), samplerate=fs, channels=1)
-    sounddevice.wait()
-    write(wav_file,fs,record_audio)
 
-    print("Recording completed")
+    # mp3_audio = AudioSegment.from_file(audio_file, format="mp3")
+    # ogg_audio = AudioSegment.from_file(audio_file, format="ogg")
 
-    # convert audio to an AudioSegment
-    audio = AudioSegment.from_wav(wav_file)
 
-    # save audio as mp3 file
-    audio.export(mp3_file,format='mp3')
+    # python audio recording (backend version)
+    # wav_file = "liverecording.wav"
+    # mp3_file = "liverecording.mp3"
+    # second = int(input("Enter recording time in seconds: "))
+    # print("Recording...\n")
 
-    return transcribe(wav_file)
+    # # record live audio
+    # record_audio = sounddevice.rec(int(second * fs), samplerate=fs, channels=1)
+    # sounddevice.wait()
+    # write(wav_file,fs,record_audio)
+
+    # print("Recording completed")
+
+    # # convert audio to an AudioSegment
+    # audio = AudioSegment.from_wav(wav_file)
+
+    # # save audio as mp3 file
+    # audio.export(mp3_file,format='mp3')
+
+    return transcribe("liverecording.wav")
 
     # print(sounddevice.query_devices)
 
