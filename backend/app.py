@@ -136,42 +136,61 @@ def set_reminder(title, summary, date_time): # implementation postponed
     return
 
 
-# run app
-# if __name__ == '__main__':
-#     app.run(debug=True)
-
 
 
 ##########################################################
 # speech-to-text endpoint
 
 # API (paid) version #################
-def transcribe():
-    audio_file = open("audio_test.m4a", "rb")
+def transcribe(audio):
+    audio_file = open(audio, "rb")
     transcript = client.audio.transcriptions.create(
     model="whisper-1",
     file=audio_file,
-    # print(transcript.text)
-)
+    )
+    
+    print(transcript.text)
 
-def record_audio():
+    response = {
+        'title': "a title",
+        'summary': transcript.text,
+    }
+    return jsonify(response)
+
+@app.route('/record')
+def get_record():
+    wav_file = "liverecording.wav"
+    mp3_file = "liverecording.mp3"
     second = int(input("Enter recording time in seconds: "))
     print("Recording...\n")
 
     # record live audio
     record_audio = sounddevice.rec(int(second * fs), samplerate=fs, channels=1)
     sounddevice.wait()
-    write("liverecording.wav",fs,record_audio)
+    write(wav_file,fs,record_audio)
+
+    print("Recording completed")
 
     # convert audio to an AudioSegment
-    audio = AudioSegment.from_wav('liverecording.wav')
+    audio = AudioSegment.from_wav(wav_file)
 
     # save audio as mp3 file
-    audio.export('liverecording.mp3',format='mp3')
+    audio.export(mp3_file,format='mp3')
+
+    return transcribe(wav_file)
 
     # print(sounddevice.query_devices)
 
-    print("Recording completed")
+
+
+
+
+# run app
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
 
 # Local (free) version ##############
 # model = whisper.load_model("base")
