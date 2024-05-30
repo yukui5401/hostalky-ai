@@ -1,4 +1,3 @@
-import io
 import json
 import os
 from flask import Flask, request, jsonify
@@ -9,7 +8,6 @@ import datetime
 import sounddevice # for audio recording
 from scipy.io.wavfile import write # for saving recorded audio
 from pydub import AudioSegment
-from io import BytesIO
 
 fs = 44100 # sample rate, for audio quality
 
@@ -44,7 +42,8 @@ def get_note():
     
     
     # data processing
-    response = rephrase(title, summary) # JSON object
+    # response = elaborate(summary) # JSON object
+    response = elaborate(summary)
     
     return response
 
@@ -101,21 +100,17 @@ def get_announce():
     #     'summary':summary,
     # }
 
-    response = rephrase(title, summary)
+    response = elaborate(summary)
     response = json.loads(response) # convert JSON into dictionary
     id_list.append({"key":"value"}) # testing purposes
     response["id_list"] = id_list # add id_list key-value pair
 
     return jsonify(response)
 
-# text-to-text summarization
-def rephrase(title, summary):
-    field_of_study = title
-    transcription = summary
-
+# text-to-text elaboration
+def elaborate(summary):
     messages = [
-        {"role": "user", "content": "Articulate the following.\n" + transcription + " Then, return a JSON object with labels 'title' and 'summary'."},
-        {"role": "system", "content": "You are an AI health assistant for: " + field_of_study}
+        {"role": "user", "content": f"Rephrase the following:\n{summary}\n Return a JSON object with labels 'title' and 'summary'."},
     ]
     start_time = time.time()
 
@@ -124,7 +119,9 @@ def rephrase(title, summary):
         messages=messages,
         n=1,
         stop=None,
-        response_format={"type":"json_object"}
+        response_format={"type":"json_object"},
+        temperature=0.2,
+        top_p=0.1,
     )
     response_time = time.time() - start_time
     # print("Response time: " + str(round(response_time, 2)) + " sec")
@@ -133,6 +130,22 @@ def rephrase(title, summary):
     # print(response.choices[0].message.content.strip())
 
     return new_response # JSON object
+
+# text-to-text revision
+def revise(summary):
+    response = client.completions.create(
+        model="gpt-3.5-turbo-instruct",
+        prompt=summary,
+        max_tokens=200, # required as default is 16
+        n=1,
+        stop=None,
+    )
+    print(response.choices[0].text)
+    
+    return jsonify({
+        'title': "A title",
+        'summary':response.choices[0].text,
+    })
 
 # formatting reminder
 def set_reminder(title, summary, date_time): # implementation postponed
@@ -154,7 +167,8 @@ def transcribe(path):
     
     print(transcript.text)
 
-    response = rephrase("a title", transcript.text)
+    # response = elaborate(transcript.text)
+    response = elaborate(transcript.text)
 
     # clean up
     os.remove(path)
