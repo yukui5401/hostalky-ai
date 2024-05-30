@@ -154,15 +154,12 @@ def transcribe(path):
     
     print(transcript.text)
 
-    response = {
-        'title': "a title",
-        'summary': transcript.text,
-    }
+    response = rephrase("a title", transcript.text)
 
     # clean up
     os.remove(path)
     
-    return jsonify(response)
+    return response
 
 @app.route('/record', methods=['POST'])
 def get_record():
