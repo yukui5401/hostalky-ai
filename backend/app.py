@@ -1,5 +1,6 @@
 import io
 import json
+import os
 from flask import Flask, request, jsonify
 from openai import OpenAI
 import time
@@ -144,8 +145,8 @@ def set_reminder(title, summary, date_time): # implementation postponed
 # speech-to-text endpoint
 
 # API (paid) version #################
-def transcribe(audio):
-    audio_file = open(audio, "rb")
+def transcribe(path):
+    audio_file = open(path, "rb")
     transcript = client.audio.transcriptions.create(
     model="whisper-1",
     file=audio_file,
@@ -157,6 +158,10 @@ def transcribe(audio):
         'title': "a title",
         'summary': transcript.text,
     }
+
+    # clean up
+    os.remove(path)
+    
     return jsonify(response)
 
 @app.route('/record', methods=['POST'])
@@ -166,8 +171,14 @@ def get_record():
         return jsonify({'error':'no audio file received'}), 400
     
     audio_file = request.files['audio'] # .FileStorage file
-    audio_content = audio_file.read() # byte file
-
+    try:
+        audio_file.seek(0)
+        temp_path = "liverecording.mp3"
+        audio_file.save(temp_path)
+        return transcribe(temp_path)
+    except Exception as e:
+        print(e)
+        return jsonify({'error':str(e)}), 500
 
     # mp3_audio = AudioSegment.from_file(audio_file, format="mp3")
     # ogg_audio = AudioSegment.from_file(audio_file, format="ogg")
@@ -192,7 +203,6 @@ def get_record():
     # # save audio as mp3 file
     # audio.export(mp3_file,format='mp3')
 
-    return transcribe("liverecording.wav")
 
     # print(sounddevice.query_devices)
 
