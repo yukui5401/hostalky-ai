@@ -110,7 +110,11 @@ def get_announce():
 # text-to-text elaboration
 def rephrase(summary):
     messages = [
-        {"role": "user", "content": f"Rephrase the following:\n{summary}"},
+        {"role": "user", "content": f"Rephrase the following:\n{summary}."},
+
+        # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
+        {"role": "assistant", "content": f"If {summary} makes no sense, I will return 'title':'No topic detected' and 'summary':'Please provide more details'."},
+
         {"role": "system", "content": "Return a JSON object with labels 'title' and 'summary'."},
     ]
     start_time = time.time()
@@ -168,8 +172,13 @@ def transcribe(path):
     
     print(transcript.text)
 
+    response = jsonify({
+        'title':'', # let user provide title
+        'summary':transcript.text,
+    })
+
     # optional (if user wants rephrasing)
-    response = rephrase(transcript.text)
+    # response = rephrase(transcript.text)
 
     # clean up
     os.remove(path)
