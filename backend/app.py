@@ -42,8 +42,8 @@ def get_note():
     
     
     # data processing
-    # response = elaborate(summary) # JSON object
-    response = elaborate(summary)
+    # response = rephrase(summary) # JSON object
+    response = rephrase(summary)
     
     return response
 
@@ -100,7 +100,7 @@ def get_announce():
     #     'summary':summary,
     # }
 
-    response = elaborate(summary)
+    response = rephrase(summary)
     response = json.loads(response) # convert JSON into dictionary
     id_list.append({"key":"value"}) # testing purposes
     response["id_list"] = id_list # add id_list key-value pair
@@ -108,9 +108,10 @@ def get_announce():
     return jsonify(response)
 
 # text-to-text elaboration
-def elaborate(summary):
+def rephrase(summary):
     messages = [
-        {"role": "user", "content": f"Rephrase the following:\n{summary}\n Return a JSON object with labels 'title' and 'summary'."},
+        {"role": "user", "content": f"Rephrase the following:\n{summary}"},
+        {"role": "system", "content": "Return a JSON object with labels 'title' and 'summary'."},
     ]
     start_time = time.time()
 
@@ -167,8 +168,8 @@ def transcribe(path):
     
     print(transcript.text)
 
-    # response = elaborate(transcript.text)
-    response = elaborate(transcript.text)
+    # optional (if user wants rephrasing)
+    response = rephrase(transcript.text)
 
     # clean up
     os.remove(path)
