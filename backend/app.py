@@ -204,11 +204,17 @@ def set_announce(summary):
         temperature=0.2,
         top_p=0.1,
     )
-    
+
     print(response.choices[0].message.content.strip())
     new_response = response.choices[0].message.content.strip()
 
-    return new_response
+    # converting to lowercase
+    new_response = json.loads(new_response) # convert to dict
+    new_response["id_list"] = [
+        {k.lower(): v.lower() for k, v in d.items()} for d in new_response["id_list"]
+        ]
+
+    return jsonify(new_response)
 
 
 
