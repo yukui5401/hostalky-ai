@@ -63,16 +63,24 @@ def get_reminder():
     summary = data.get('summary')
     date_time = data.get('date_time')
 
+    # testing date_time format
+    print(date_time)
+
     if not title or not summary or not date_time:
         return jsonify({'error': 'All three title, summary, and date_time are required'}), 403
     
     # data processing
-    response = {
-        'title':title,
-        'summary':summary + " " + summary,
-        'date_time':date_time,
-    }
-    return jsonify(response)
+    # response = set_reminder(title, summary, date_time) # json object with child json date_time object
+
+    response = jsonify({
+        'title': title,
+        'summary': summary + " " + date_time,
+        'date_time': date_time,
+    })
+
+    response = set_reminder(summary)
+
+    return response
 
 # announce page
 @app.route('/announce', methods=['POST'])
@@ -153,8 +161,31 @@ def revise(summary):
     })
 
 # formatting reminder
-def set_reminder(title, summary, date_time): # implementation postponed
-    return
+def set_reminder(summary): # implementation postponed
+    messages = [
+        {"role": "user", "content": f"Today's date is {datetime.datetime.today()}. Rephrase the following:\n{summary}."},
+
+        # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
+        {"role": "assistant", "content": f"If {summary} makes no sense, I will return 'title':'No topic detected' and 'summary':'Please provide more details'."},
+
+        {"role": "system", "content": f"Return a JSON object with labels 'title', 'summary', and 'date_time'. Ensure 'date_time' is formatted as YYYY-MM-DDThh:mm."},
+    ]
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        n=1,
+        stop=None,
+        response_format={"type":"json_object"},
+        temperature=0.2,
+        top_p=0.1,
+    )
+
+    print(response.choices[0].message.content.strip())
+    new_response = response.choices[0].message.content.strip()
+
+    return new_response
+
+
 
 
 
@@ -178,7 +209,7 @@ def transcribe(path):
     })
 
     # optional (if user wants rephrasing)
-    # response = rephrase(transcript.text)
+    response = rephrase(transcript.text)
 
     # clean up
     os.remove(path)
