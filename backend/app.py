@@ -163,10 +163,10 @@ def revise(summary):
 # formatting reminder
 def set_reminder(summary): # implementation postponed
     messages = [
-        {"role": "user", "content": f"Today's date is {datetime.datetime.today()}. Rephrase the following:\n{summary}."},
+        {"role": "user", "content": f"Today's date is {datetime.datetime.today()}. Rephrase the following:\n{summary}"},
 
         # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
-        {"role": "assistant", "content": f"If {summary} makes no sense, I will return 'title':'No topic detected' and 'summary':'Please provide more details'."},
+        {"role": "assistant", "content": "If {summary} is not coherent, respond with the following: 'title': 'No topic detected' and 'summary': 'Please provide more details'."},
 
         {"role": "system", "content": f"Return a JSON object with labels 'title', 'summary', and 'date_time'. Ensure 'date_time' is formatted as YYYY-MM-DDThh:mm."},
     ]
