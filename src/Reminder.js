@@ -55,7 +55,7 @@ const Reminder = () => {
                 const formData = new FormData();
                 formData.append('audio', audioBlob);
 
-                const response = await fetch('/record', {
+                const response = await fetch('/record_reminder', {
                     method: 'POST',
                     body: formData
                 });
@@ -126,7 +126,7 @@ const Reminder = () => {
             <button name="record">Record</button> &emsp;
             <button name="stop">Stop</button>
             <hr></hr>
-            
+
             <form onSubmit={handleSubmit}>
                 <textarea
                     type="text"

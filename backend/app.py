@@ -208,8 +208,15 @@ def transcribe(path):
         'summary':transcript.text,
     })
 
-    # optional (if user wants rephrasing)
-    response = rephrase(transcript.text)
+    # determine notes/reminder/annouce path 
+    print(request.path)
+    if request.path == "/record":
+        # optional (if user wants rephrasing)
+        response = rephrase(transcript.text)
+    elif request.path == "/record_reminder":
+        response = set_reminder(transcript.text)
+    else: 
+        print("no valid backend route found")
 
     # clean up
     os.remove(path)
@@ -258,8 +265,21 @@ def get_record():
 
     # print(sounddevice.query_devices)
 
-
-
+@app.route('/record_reminder', methods=['POST'])
+def get_record_reminder():
+    # data validation
+    if 'audio' not in request.files:
+        return jsonify({'error':'no audio file received'}), 400
+    
+    audio_file = request.files['audio'] # .FileStorage file
+    try:
+        audio_file.seek(0)
+        temp_path = "liverecording.mp3"
+        audio_file.save(temp_path)
+        return transcribe(temp_path)
+    except Exception as e:
+        print(e)
+        return jsonify({'error':str(e)}), 500
 
 
 # run app
