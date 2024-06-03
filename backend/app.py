@@ -166,7 +166,7 @@ def set_reminder(summary): # implementation postponed
         {"role": "user", "content": f"Today's date is {datetime.datetime.today()}. Rephrase the following:\n{summary}"},
 
         # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
-        {"role": "assistant", "content": "If {summary} is not coherent, respond with the following: 'title': 'No topic detected' and 'summary': 'Please provide more details'."},
+        {"role": "assistant", "content": f"If {summary} is not coherent, respond with the following: 'title': 'No topic detected' and 'summary': 'Please provide more details'."},
 
         {"role": "system", "content": f"Return a JSON object with labels 'title', 'summary', and 'date_time'. Ensure 'date_time' is formatted as YYYY-MM-DDThh:mm."},
     ]
@@ -185,7 +185,30 @@ def set_reminder(summary): # implementation postponed
 
     return new_response
 
+# formatting announce
+def set_announce(summary):
+    messages = [
+        {"role": "user", "content": f"Rephrase the following:\n{summary}"},
+        
+        # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
+        {"role": "assistant", "content": f"If {summary} is not coherent, respond with the following: 'title': 'No topic detected' and 'summary': 'Please provide more details'."},
 
+        {"role": "system", "content": f"Return a JSON object with labels 'title, 'summary', and 'id_list'. 'id_list' is an array of dicts with labels 'label' and 'value'. 'label' is the recipient name and 'value' is the same as 'label' with '&' prepended."}
+    ]
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        n=1,
+        stop=None,
+        response_format={"type":"json_object"},
+        temperature=0.2,
+        top_p=0.1,
+    )
+    
+    print(response.choices[0].message.content.strip())
+    new_response = response.choices[0].message.content.strip()
+
+    return new_response
 
 
 
@@ -215,6 +238,8 @@ def transcribe(path):
         response = rephrase(transcript.text)
     elif request.path == "/record_reminder":
         response = set_reminder(transcript.text)
+    elif request.path == "/record_announce":
+        response = set_announce(transcript.text)
     else: 
         print("no valid backend route found")
 
@@ -267,6 +292,23 @@ def get_record():
 
 @app.route('/record_reminder', methods=['POST'])
 def get_record_reminder():
+    # data validation
+    if 'audio' not in request.files:
+        return jsonify({'error':'no audio file received'}), 400
+    
+    audio_file = request.files['audio'] # .FileStorage file
+    try:
+        audio_file.seek(0)
+        temp_path = "liverecording.mp3"
+        audio_file.save(temp_path)
+        return transcribe(temp_path)
+    except Exception as e:
+        print(e)
+        return jsonify({'error':str(e)}), 500
+    
+
+@app.route('/record_announce', methods=['POST'])
+def get_record_announce():
     # data validation
     if 'audio' not in request.files:
         return jsonify({'error':'no audio file received'}), 400
