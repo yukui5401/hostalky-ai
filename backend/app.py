@@ -1,6 +1,7 @@
 import json
 import os
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from openai import OpenAI
 import time
 import datetime
@@ -15,6 +16,7 @@ client = OpenAI()
 
 # initialize Flask app
 app = Flask(__name__)
+CORS(app) # enables CORS for all routes
 
 # set date and time
 @app.route('/timedate')
