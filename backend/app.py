@@ -191,7 +191,7 @@ def set_announce(summary):
         {"role": "user", "content": f"Rephrase the following:\n{summary}"},
         
         # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
-        {"role": "assistant", "content": f"If {summary} is not coherent, respond with the following: 'title': 'No topic detected' and 'summary': 'Please provide more details'."},
+        {"role": "assistant", "content": f"If {summary} is not coherent, respond with the following: 'title': 'No topic detected'; 'summary': 'Please provide more details'; 'id_list: ' '."},
 
         {"role": "system", "content": f"Return a JSON object with labels 'title, 'summary', and 'id_list'. 'id_list' is an array of dicts with labels 'label' and 'value'. 'label' is the recipient name and 'value' is the same as 'label' with '&' prepended."}
     ]
