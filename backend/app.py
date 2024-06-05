@@ -45,7 +45,7 @@ def get_note():
     
     # data processing
     # response = rephrase(summary) # JSON object
-    response = rephrase(summary)
+    response = rephrase(title, summary)
     
     return response
 
@@ -73,14 +73,8 @@ def get_reminder():
     
     # data processing
     # response = set_reminder(title, summary, date_time) # json object with child json date_time object
-
-    response = jsonify({
-        'title': title,
-        'summary': summary + " " + date_time,
-        'date_time': date_time,
-    })
-
-    response = set_reminder(summary)
+    
+    response = set_reminder(title, summary, date_time)
 
     return response
 
@@ -110,20 +104,22 @@ def get_announce():
     #     'summary':summary,
     # }
 
-    response = rephrase(summary)
-    response = json.loads(response) # convert JSON into dictionary
-    id_list.append({"key":"value"}) # testing purposes
-    response["id_list"] = id_list # add id_list key-value pair
+    # response = rephrase(summary)
+    # response = json.loads(response) # convert JSON into dictionary
+    # id_list.append({"key":"value"}) # testing purposes
+    # response["id_list"] = id_list # add id_list key-value pair
 
-    return jsonify(response)
+    response = set_announce(title, summary, id_list)
+
+    return response
 
 # text-to-text elaboration
-def rephrase(summary):
+def rephrase(title, summary):
     messages = [
-        {"role": "user", "content": f"Rephrase the following:\n{summary}."},
+        {"role": "user", "content": f"On the topic of {title}, rephrase the following:\n{summary}."},
 
         # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
-        {"role": "assistant", "content": f"If {summary} makes no sense, I will return 'title':'No topic detected' and 'summary':'Please provide more details'."},
+        # {"role": "assistant", "content": f"If {summary} is not coherent, I will return 'title':'No topic detected' and 'summary':'Please provide more details'."},
 
         {"role": "system", "content": "Return a JSON object with labels 'title' and 'summary'."},
     ]
@@ -163,15 +159,23 @@ def revise(summary):
     })
 
 # formatting reminder
-def set_reminder(summary): # implementation postponed
-    messages = [
-        {"role": "user", "content": f"Today's date is {datetime.datetime.today()}. Rephrase the following:\n{summary}"},
+def set_reminder(title, summary, date_time): # implementation postponed
+    messages = []
+    if title == "" or date_time == "": # when reminder is set through recording
+        messages = [
+            {"role": "user", "content": f"Today's date is {datetime.datetime.today()}. Rephrase the following:\n{summary}"},
 
-        # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
-        {"role": "assistant", "content": f"If {summary} is not coherent, respond with the following: 'title': 'No topic detected' and 'summary': 'Please provide more details'."},
+            # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
+            # {"role": "assistant", "content": f"If {summary} is not coherent, respond with the following: 'title': 'No topic detected' and 'summary': 'Please provide more details'."},
 
-        {"role": "system", "content": f"Return a JSON object with labels 'title', 'summary', and 'date_time'. Ensure 'date_time' is formatted as YYYY-MM-DDThh:mm."},
-    ]
+            {"role": "system", "content": f"Return a JSON object with labels 'title', 'summary', and 'date_time'. Ensure 'date_time' is formatted as YYYY-MM-DDThh:mm."},
+        ]
+    else: # when reminder is set through text submission
+        response = rephrase(title, summary)
+        response = json.loads(response)
+        response["date_time"] = date_time
+        return jsonify(response)
+    
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
@@ -188,15 +192,23 @@ def set_reminder(summary): # implementation postponed
     return new_response
 
 # formatting announce
-def set_announce(summary):
-    messages = [
-        {"role": "user", "content": f"Rephrase the following:\n{summary}"},
-        
-        # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
-        {"role": "assistant", "content": f"If {summary} is not coherent, respond with the following: 'title': 'No topic detected'; 'summary': 'Please provide more details'; 'id_list: ' '."},
+def set_announce(title, summary, id_list):
+    messages = []
+    if title == "" or id_list == "": # setting announcement through recording
+        messages = [
+            {"role": "user", "content": f"Rephrase the following:\n{summary}"},
+            
+            # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
+            # {"role": "assistant", "content": f"If {summary} is not coherent, respond with the following: 'title': 'No topic detected'; 'summary': 'Please provide more details'; 'id_list: ' '."},
 
-        {"role": "system", "content": f"Return a JSON object with labels 'title, 'summary', and 'id_list'. 'id_list' is an array of dicts with labels 'label' and 'value'. 'label' is the recipient name and 'value' is the same as 'label' with '&' prepended."}
-    ]
+            {"role": "system", "content": f"Return a JSON object with labels 'title, 'summary', and 'id_list'. 'id_list' is an array of dicts with labels 'label' and 'value'. 'label' is the recipient name and 'value' is the same as 'label' with '&' prepended."}
+        ]
+    else: # setting announcement through text submission
+        response = rephrase(title, summary)
+        response = json.loads(response)
+        response["id_list"] = id_list
+        return jsonify(response)
+    
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
@@ -243,11 +255,11 @@ def transcribe(path):
     print(request.path)
     if request.path == "/record":
         # optional (if user wants rephrasing)
-        response = rephrase(transcript.text)
+        response = rephrase("", transcript.text)
     elif request.path == "/record_reminder":
-        response = set_reminder(transcript.text)
+        response = set_reminder("", transcript.text, "")
     elif request.path == "/record_announce":
-        response = set_announce(transcript.text)
+        response = set_announce("", transcript.text, "")
     else: 
         print("no valid backend route found")
 
