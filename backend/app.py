@@ -45,7 +45,7 @@ def get_note():
     
     # data processing
     # response = rephrase(summary) # JSON object
-    response = rephrase(title, summary)
+    response = prefilter(title, summary)
     
     return response
 
@@ -73,8 +73,9 @@ def get_reminder():
     
     # data processing
     # response = set_reminder(title, summary, date_time) # json object with child json date_time object
-    
-    response = set_reminder(title, summary, date_time)
+
+    # response = set_reminder(title, summary, date_time)
+    response = prefilter_reminder(title, summary, date_time)
 
     return response
 
@@ -109,20 +110,148 @@ def get_announce():
     # id_list.append({"key":"value"}) # testing purposes
     # response["id_list"] = id_list # add id_list key-value pair
 
-    response = set_announce(title, summary, id_list)
+    # response = set_announce(title, summary, id_list)
+    response = prefilter_announce(title, summary, id_list)
 
     return response
 
+# prefilter prompt
+def prefilter(title, summary):
+    messages = []
+    if title == '':
+        messages = [
+            {"role": "user", "content": f"Respond 'True or 'False':\n '{summary}'\n is in English."}
+        ]
+    else:
+        messages = [
+            {"role": "user", "content": f"Respond 'True or 'False': '{title}' and \n'{summary}'\n are in English."}
+        ]
+        
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        n=1,
+        stop=None,
+        temperature=0.2,
+        top_p=0.1,
+    )
+    new_response = response.choices[0].message.content.strip()
+    print(new_response)
+
+    if new_response == 'False':
+        return jsonify({
+            'title': "No topic detected",
+            'summary': "Please provide more details"
+        })
+    else:
+        return rephrase(title, summary)
+    
+def prefilter_reminder(title, summary, date_time):
+    messages = []
+    if title == '':
+        messages = [
+            {"role": "user", "content": f"Respond 'True or 'False':\n '{summary}'\n is in English."}
+        ]
+    else:
+        messages = [
+            {"role": "user", "content": f"Respond 'True or 'False': '{title}' and \n'{summary}'\n are in English."}
+        ]
+        
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        n=1,
+        stop=None,
+        temperature=0.2,
+        top_p=0.1,
+    )
+    new_response = response.choices[0].message.content.strip()
+    print(new_response)
+
+    if new_response == 'False':
+        return jsonify({
+            'title': "No topic detected",
+            'summary': "Please provide more details",
+            'date_time': date_time,
+        })
+    else:
+        return set_reminder(title, summary, date_time)
+
+def prefilter_announce(title, summary, id_list): # id_list filtering postponed (requires contact data for cross-matching)
+    messages = []
+    if title == '':
+        messages = [
+            {"role": "user", "content": f"Respond 'True or 'False':\n '{summary}'\n is in English."}
+        ]
+    else:
+        messages = [
+            {"role": "user", "content": f"Respond 'True or 'False': '{title}' and \n'{summary}'\n are in English."}
+        ]
+        
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        n=1,
+        stop=None,
+        temperature=0.2,
+        top_p=0.1,
+    )
+    new_response = response.choices[0].message.content.strip()
+    print(new_response)
+
+    if new_response == 'False':
+        return jsonify({
+            'title': "No topic detected",
+            'summary': "Please provide more details",
+            'id_list': id_list,
+        })
+    else:
+        return set_announce(title, summary, id_list)
+    
+
+# filter prompt
+def filter(json_response):
+    first_response = json.loads(json_response)
+    messages = [
+        {"role": "user", "content": f"Respond 'True' or 'False': '{first_response['title']}' is English."}
+    ]
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        n=1,
+        stop=None,
+        temperature=0.2,
+        top_p=0.1,
+    )
+    print(first_response['title'])
+    new_response = response.choices[0].message.content.strip()
+    print(new_response)
+
+    if new_response == 'False':
+        return jsonify({
+            'title': "No topic detected",
+            "summary": "Provide more details",
+        })
+    else: 
+        return json_response
+
 # text-to-text elaboration
 def rephrase(title, summary):
-    messages = [
-        {"role": "user", "content": f"On the topic of {title}, rephrase the following:\n{summary}."},
+    messages = []
+    if title == '': # retrieved through recording
+        messages = [
+            {"role": "user", "content": f"Rephrase the following:\n{summary}."},
+            {"role": "system", "content": "Return a JSON object with labels 'title' and 'summary'."},
+        ]
+    else:
+        messages = [
+            {"role": "user", "content": f"On the topic of {title}, rephrase the following:\n{summary}."},
 
-        # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
-        # {"role": "assistant", "content": f"If {summary} is not coherent, I will return 'title':'No topic detected' and 'summary':'Please provide more details'."},
+            # to avoid hallucinatory responses (for short recordings), but hinders (removes) translation feature
+            # {"role": "assistant", "content": f"If {summary} is not coherent, I will return 'title':'No topic detected' and 'summary':'Please provide more details'."},
 
-        {"role": "system", "content": "Return a JSON object with labels 'title' and 'summary'."},
-    ]
+            {"role": "system", "content": "Return a JSON object with labels 'title' and 'summary'."},
+        ]
     start_time = time.time()
 
     response = client.chat.completions.create(
@@ -138,9 +267,10 @@ def rephrase(title, summary):
     # print("Response time: " + str(round(response_time, 2)) + " sec")
 
     new_response = response.choices[0].message.content.strip()
-    # print(response.choices[0].message.content.strip())
+    print(response.choices[0].message.content.strip())
 
-    return new_response # JSON object
+    # return new_response # JSON object
+    return new_response
 
 # text-to-text revision
 def revise(summary):
@@ -255,11 +385,11 @@ def transcribe(path):
     print(request.path)
     if request.path == "/record":
         # optional (if user wants rephrasing)
-        response = rephrase("", transcript.text)
+        response = prefilter("", transcript.text)
     elif request.path == "/record_reminder":
-        response = set_reminder("", transcript.text, "")
+        response = prefilter_reminder("", transcript.text, "")
     elif request.path == "/record_announce":
-        response = set_announce("", transcript.text, "")
+        response = prefilter_announce("", transcript.text, "")
     else: 
         print("no valid backend route found")
 
