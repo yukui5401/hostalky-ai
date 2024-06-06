@@ -119,11 +119,15 @@ const Announce = () => {
     };
 
     useEffect(() => {
-        document.querySelector('button[name="record"]').addEventListener('click', handleStartClick);
-        return () => {
-            document.querySelector('button[name="record"]').removeEventListener('click', handleStartClick);
-        };
+        const button = document.querySelector('button[name="record"]');
+        if (button && window.location.pathname === '/announce') {
+            button.addEventListener('click', handleStartClick);
+            return () => {
+                button.removeEventListener('click', handleStartClick);
+            };
+        }
     }, []);
+    
 
     return (
         <div className="center">
