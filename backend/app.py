@@ -482,6 +482,7 @@ def match_recipients(id_list):
     threshold = 0.5
     for idx1, name1 in enumerate(id_list):
         for key1, value1 in name1.items():
+            sim_list = [] # similarity list 
             print(f"{key1}: {value1}")
             print()
             for idx2, name2 in enumerate(recipients):
@@ -491,9 +492,10 @@ def match_recipients(id_list):
                     distance = Levenshtein.distance(value1, value2)  # Compare values, not keys
                     max_length = max(len(value1), len(value2))
                     similarity = 1 - (distance / max_length)
-                    if similarity >= threshold:
-                        id_list[idx1] = recipients[idx2]
-                        break  # Stop inner loop once a match is found
+                    sim_list.append([similarity, idx2])
+            sim_list = sorted(sim_list)
+            id_list[idx1] = recipients[sim_list[-1][1]]
+
     return id_list
 
 
