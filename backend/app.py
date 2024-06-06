@@ -1,6 +1,8 @@
 import re
 from transformers import pipeline
 
+import Levenshtein
+
 import json
 import os
 from flask import Flask, request, jsonify
@@ -78,6 +80,18 @@ def detect_prompt_injection(prompt):
 
 
 # ------------ Start of code --------------------------------
+
+# Initialize the recipients list
+recipients = [
+    {"label": "brookeyang", "value": "&brookeyang"},
+    {"label": "ross", "value": "&ross"},
+    {"label": "pratheepan", "value": "&pratheepan"}
+]
+
+@app.route('/recipients', methods=['GET'])
+def get_recipients():
+    return jsonify(recipients)
+
 
 # set date and time
 @app.route('/timedate')
@@ -445,6 +459,8 @@ def set_announce(title, summary, id_list):
         {k.lower(): v.lower() for k, v in d.items()} for d in new_response["id_list"]
         ]
     
+    new_response["id_list"] = match_recipients(new_response["id_list"])
+    
     if detect_prompt_injection(new_response.get('title', '')) and detect_prompt_injection(new_response.get('summary', '')):
         if id_list == "":
             return jsonify({
@@ -460,6 +476,25 @@ def set_announce(title, summary, id_list):
             })
 
     return jsonify(new_response)
+
+# matching generated recipients to intended recipients
+def match_recipients(id_list):
+    threshold = 0.5
+    for idx1, name1 in enumerate(id_list):
+        for key1, value1 in name1.items():
+            print(f"{key1}: {value1}")
+            print()
+            for idx2, name2 in enumerate(recipients):
+                for key2, value2 in name2.items():
+                    print(f"{key2}: {value2}")
+                    print()
+                    distance = Levenshtein.distance(value1, value2)  # Compare values, not keys
+                    max_length = max(len(value1), len(value2))
+                    similarity = 1 - (distance / max_length)
+                    if similarity >= threshold:
+                        id_list[idx1] = recipients[idx2]
+                        break  # Stop inner loop once a match is found
+    return id_list
 
 
 # --------------- speech-to-text endpoint -------------------------
