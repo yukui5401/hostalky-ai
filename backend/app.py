@@ -160,12 +160,12 @@ def rephrase(title, summary):
     messages = []
     if title == '': # retrieved through recording
         messages = [
-            {"role": "user", "content": f"Rephrase the following:\n{summary}"},
+            {"role": "user", "content": f"Rephrase the following:\n'{summary}'"},
             {"role": "system", "content": "Return a JSON object with the following structure:\n { 'title': <title_content>, 'summary': <summary_content> }"},
         ]
     else:
         messages = [
-            {"role": "user", "content": f"On the topic of {title}, rephrase the following:\n{summary}."},
+            {"role": "user", "content": f"On the topic of {title}, rephrase the following:\n'{summary}'\n as a JSON object."},
             {"role": "system", "content": "Return a JSON object with the following structure:\n { 'title': <title_content>, 'summary': <summary_content> }"},
         ]
     start_time = time.time()
@@ -182,7 +182,11 @@ def rephrase(title, summary):
     # print("Response time: " + str(round(response_time, 2)) + " sec")
     new_response = response.choices[0].message.content.strip()
     print(response.choices[0].message.content.strip())
-    new_dict_response = json.loads(new_response)
+    try:
+        new_dict_response = json.loads(new_response)
+    except:
+        return jsonify({'summary':"Invalid JSON format"})
+    
     if detect_prompt_injection(new_dict_response.get('title', '')) and detect_prompt_injection(new_dict_response.get('summary', '')):
         default_response = {
             'title': "Sensitive topic detected",
@@ -193,15 +197,20 @@ def rephrase(title, summary):
 
 # formatting reminder
 def set_reminder(title, summary, date_time): # implementation postponed
+    print(f"reached set_reminder with title:{title}")
     messages = []
     if title == "" or date_time == "": # when reminder is set through recording
         messages = [
-            {"role": "user", "content": f"Today's date is {datetime.datetime.today()}. Rephrase the following:\n{summary}"},
+            {"role": "user", "content": f"Today's date is {datetime.datetime.today()}. Rephrase the following:\n'{summary}'"},
             {"role": "system", "content": "Return a JSON object with the following structure:\n { 'title': <title_content>, 'summary': <summary_content>, 'date_time': <date_time_content> }.\n <date_time_content> is formatted as YYYY-MM-DDThh:mm."},
         ]
     else: # when reminder is set through text submission
         response = rephrase(title, summary)
-        response = json.loads(response)
+        try:
+            response = json.loads(response)
+        except:
+            return jsonify({'summary':"Invalid JSON format"})
+        
         response["date_time"] = date_time
         return jsonify(response)
     
@@ -214,11 +223,15 @@ def set_reminder(title, summary, date_time): # implementation postponed
         temperature=0.2,
         top_p=0.1,
     )
-
+    
     print(response.choices[0].message.content.strip())
     new_response = response.choices[0].message.content.strip()
 
-    new_dict_response = json.loads(new_response)
+    try:
+        new_dict_response = json.loads(new_response)
+    except:
+        return jsonify({'summary': "Invalid JSON format"})
+    
     if detect_prompt_injection(new_dict_response.get('title', '')) and detect_prompt_injection(new_dict_response.get('summary', '')):
         return jsonify({
             'title': "Sensitive topic detected",
@@ -233,12 +246,16 @@ def set_announce(title, summary, id_list):
     messages = []
     if title == "" or id_list == "": # setting announcement through recording
         messages = [
-            {"role": "user", "content": f"Rephrase the following:\n{summary}"},
+            {"role": "user", "content": f"Rephrase the following:\n'{summary}'"},
             {"role": "system", "content": "Return a JSON object with the following structure:\n { 'title': <title_content>, 'summary': <summary_content>, 'id_list': [{ 'label': <name>, 'value': &<name> }...] }\n where <name> is the name of recipients."}
         ]
     else: # setting announcement through text submission
         response = rephrase(title, summary)
-        response = json.loads(response)
+        try:
+            response = json.loads(response)
+        except:
+            return jsonify({'summary':"Invalid JSON format"})
+        
         response["id_list"] = id_list
         return jsonify(response)
     
@@ -255,8 +272,12 @@ def set_announce(title, summary, id_list):
     print(response.choices[0].message.content.strip())
     new_response = response.choices[0].message.content.strip()
 
+    try:
+        new_response = json.loads(new_response) # convert to dict
+    except:
+        return jsonify({'summary':"Invalid JSON format"})
+
     # converting to lowercase
-    new_response = json.loads(new_response) # convert to dict
     new_response["id_list"] = [
         {k.lower(): v.lower() for k, v in d.items()} for d in new_response["id_list"]
         ]
