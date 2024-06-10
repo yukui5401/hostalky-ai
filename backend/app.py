@@ -21,6 +21,24 @@ CORS(app) # enables CORS for all routes
 
 
 
+
+# ----------- Setting up Postman -------------------------
+
+@app.route('/data', methods=['GET', 'POST'])
+def handle_request():
+    if request.method == 'GET':
+        data = {"message": "This is a GET request!"}
+        return jsonify(data)
+    elif request.method == 'POST':
+        data = request.get_json()
+        response = {"message": "This is a POST request!", "data_received": data}
+        return jsonify(response)
+    else:
+        return 'Method Not Allowed', 405
+
+
+
+
 # ----------- Start of Security Measures for Prompt Injections -----------------------
 # Set TOKENIZERS_PARALLELISM environment variable (for mitigating deadlock)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
