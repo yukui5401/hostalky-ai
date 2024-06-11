@@ -2,6 +2,7 @@ import re
 from transformers import pipeline
 
 import Levenshtein
+import requests
 
 import json
 import os
@@ -18,25 +19,6 @@ client = OpenAI()
 # initialize Flask app
 app = Flask(__name__)
 CORS(app) # enables CORS for all routes
-
-
-
-
-# ----------- Setting up Postman -------------------------
-
-@app.route('/data', methods=['GET', 'POST'])
-def handle_request():
-    if request.method == 'GET':
-        data = {"message": "This is a GET request!"}
-        return jsonify(data)
-    elif request.method == 'POST':
-        data = request.get_json()
-        response = {"message": "This is a POST request!", "data_received": data}
-        return jsonify(response)
-    else:
-        return 'Method Not Allowed', 405
-
-
 
 
 # ----------- Start of Security Measures for Prompt Injections -----------------------
@@ -119,6 +101,8 @@ def get_note():
     
     # data processing
     response = rephrase(title, summary)
+    response = json.loads(response)
+    response = jsonify(response)
     
     return response
 
