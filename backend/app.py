@@ -3,6 +3,7 @@ from transformers import pipeline
 
 import Levenshtein
 import requests
+import jwt
 
 import json
 import os
@@ -19,6 +20,57 @@ client = OpenAI()
 # initialize Flask app
 app = Flask(__name__)
 CORS(app) # enables CORS for all routes
+
+# ----------- User login/authentication endpoints ----------------------
+
+app.config['SECRET_KEY'] = 'your_secret_key'  # Change this to your own secret key
+
+# Dummy user database
+users = {
+    'brookeyangq': 'hostalkyai@123'
+}
+
+# Dummy user roles
+user_roles = {
+    'username': 'admin'
+}
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({'message': 'Username or Password is missing'}), 400
+
+    username = data['username']
+    password = data['password']
+
+    if username in users and users[username] == password:
+        token = jwt.encode({'username': username, 'exp': datetime.datetime.now() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
+        return jsonify({'token': token})
+
+    return jsonify({'message': 'Invalid credentials'}), 401
+
+@app.route('/protected')
+def protected():
+    token = request.args.get('token')
+    if not token:
+        return jsonify({'message': 'Token is missing'}), 401
+
+    try:
+        data = jwt.decode(token, app.config['SECRET_KEY'])
+        username = data['username']
+        if username in user_roles and user_roles[username] == 'admin':
+            return jsonify({'message': 'Welcome to the protected route, admin!'})
+        else:
+            return jsonify({'message': 'You do not have permission to access this route'}), 403
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token'}), 401
+
+
 
 
 # ----------- Start of Security Measures for Prompt Injections -----------------------
@@ -356,6 +408,8 @@ def transcribe(path):
     # clean up
     os.remove(path)
     
+    # data processing
+
     return response
 
 @app.route('/record', methods=['POST'])
