@@ -46,6 +46,11 @@ contacts = {
     ]
 }
 
+user_notes = {
+    'hostalky': [],
+    'remitbee': []
+}
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -57,7 +62,7 @@ def login():
     password = data['password']
 
     if username in users and users[username] == password:
-        token = jwt.encode({'username': username, 'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=20)}, app.config['SECRET_KEY'], algorithm='HS256')
+        token = jwt.encode({'username': username, 'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)}, app.config['SECRET_KEY'], algorithm='HS256')
         return jsonify({'token': token})
 
     return jsonify({'message': 'Invalid credentials'}), 401
@@ -157,6 +162,30 @@ def get_note():
     if not title.strip() or not summary.strip():
         return jsonify({'title': 'Missing details', 'summary': 'Both title and summary are required'})
     
+    token = request.headers.get('Authorization')
+    print(f"Token: {token}")
+    if token:
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            username = data['username']
+            if username in user_roles:
+                role = user_roles[username]
+                user_notes[role].append(
+                    {
+                        "title": title,
+                        "summary": summary
+                    }
+                )
+                print(user_notes)
+                return jsonify({'message': f'Saved notes for {username}!'})
+            else:
+                return jsonify({'message': 'You do not have permission to access this route'}), 403
+
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Invalid token'}), 401
+
     
     # data processing
     response = rephrase(title, summary)

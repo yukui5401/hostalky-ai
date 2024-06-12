@@ -201,7 +201,7 @@ const Announce = () => {
                     required
                 />
                 <br />
-                <button type="submit">Submit</button>
+                <button type="submit">Summarize</button>
             </form>
             <p>JSON recipient data: {JSON.stringify(data.id_list)}</p>
             <h3>{data.title}</h3>

@@ -157,7 +157,7 @@ const Reminder = () => {
                         required 
                     />
                 </h6>
-                <button type="submit">Submit</button>
+                <button type="submit">Summarize</button>
             </form>
 
             <h3>{data.title}</h3>

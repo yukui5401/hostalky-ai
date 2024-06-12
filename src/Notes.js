@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 
 const Notes = () => {
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
         const btnStart = document.querySelector('button[name="record"]');
@@ -114,6 +115,25 @@ const Notes = () => {
             console.error("Failed to submit");
         }
     };
+    
+    const handleSave = async (e) => {
+        e.preventDefault();
+        const response = await fetch("/notes", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        if (response.ok) {
+            const responseData = await response.json();
+            setData(responseData);
+            console.log("It worked");
+        } else {
+            console.error("Failed to submit");
+        }
+    };
 
 
     return (
@@ -150,7 +170,8 @@ const Notes = () => {
                     required
                 />
                 <br />
-                <button type="submit">Submit</button>
+                <button type="submit">Summarize</button><br/>
+                <button type="button" onClick={handleSave}>Save & Submit</button>
             </form>
 
             <h3>{data.title}</h3>
