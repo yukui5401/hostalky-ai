@@ -22,29 +22,32 @@ app = Flask(__name__)
 CORS(app) # enables CORS for all routes
 
 # ----------- User login/authentication endpoints ----------------------
-app.config['SECRET_KEY'] = os.urandom(24)  # Change this to your own secret key
+app.config['SECRET_KEY'] = "lobsterfish"  # Change this to your own secret key
+
+# Initialize the recipients list
+recipients = []
 
 # Dummy user database
 users = {
     'brookeyangq': 'hostalkyai@123',
-    'johnsmith': 'password123',
+    'danielsongq': 'remitbeeai@123',
 }
 
 # Dummy user roles
 user_roles = {
-    'brookeyangq': 'admin',
-    'johnsmith': 'user',
+    'brookeyangq': 'hostalky',
+    'danielsongq': 'remitbee',
 }
 
 # Dummy contact list
 contacts = {
-    'admin': [
-        {'name': 'Alice', 'email': 'alice@example.com'},
-        {'name': 'Bob', 'email': 'bob@example.com'}
+    'hostalky': [
+        {'label': 'ross', 'value': '&ross'},
+        {'label': 'pratheepan', 'value': '&pratheepan'}
     ],
-    'user': [
-        {'name': 'Charlie', 'email': 'charlie@example.com'},
-        {'name': 'David', 'email': 'david@example.com'}
+    'remitbee': [
+        {'label': 'neville', 'value': '&neville'},
+        {'label': 'yogi', 'value': '&yogi'}
     ]
 }
 
@@ -76,6 +79,7 @@ def protected():
         if username in user_roles:
             role = user_roles[username]
             user_contacts = contacts.get(role, [])
+            global recipients; recipients = user_contacts # updated contact list, user-specific
             return jsonify({'message': f'Welcome {username}!', 'contacts': user_contacts})
         else:
             return jsonify({'message': 'You do not have permission to access this route'}), 403
@@ -126,13 +130,6 @@ def detect_prompt_injection(prompt):
 
 
 # ------------ Start of code --------------------------------
-
-# Initialize the recipients list
-recipients = [
-    {"label": "brookeyang", "value": "&brookeyang"},
-    {"label": "ross", "value": "&ross"},
-    {"label": "pratheepan", "value": "&pratheepan"}
-]
 
 @app.route('/recipients', methods=['GET'])
 def get_recipients():
