@@ -32,6 +32,32 @@ const Announce = () => {
         }));
     }, [selected]);
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const fetchData = async () => {
+            try {
+                const response = await fetch("/protected", {
+                    method: "GET",
+                    headers: {
+                        'Authorization': `${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    setData(responseData);
+                    console.log("Data fetched successfully");
+                } else {
+                    console.error("Failed to fetch data");
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({

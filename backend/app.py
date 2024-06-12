@@ -69,7 +69,8 @@ def login():
 
 @app.route('/protected')
 def protected():
-    token = request.args.get('token')
+    token = request.headers.get('Authorization')
+    print(f"Token: {token}")
     if not token:
         return jsonify({'message': 'Token is missing'}), 401
 
@@ -79,7 +80,8 @@ def protected():
         if username in user_roles:
             role = user_roles[username]
             user_contacts = contacts.get(role, [])
-            global recipients; recipients = user_contacts # updated contact list, user-specific
+            recipients.clear()
+            recipients.extend(user_contacts)
             return jsonify({'message': f'Welcome {username}!', 'contacts': user_contacts})
         else:
             return jsonify({'message': 'You do not have permission to access this route'}), 403
