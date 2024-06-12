@@ -22,17 +22,30 @@ app = Flask(__name__)
 CORS(app) # enables CORS for all routes
 
 # ----------- User login/authentication endpoints ----------------------
-
-app.config['SECRET_KEY'] = 'your_secret_key'  # Change this to your own secret key
+app.config['SECRET_KEY'] = os.urandom(24)  # Change this to your own secret key
 
 # Dummy user database
 users = {
-    'brookeyangq': 'hostalkyai@123'
+    'brookeyangq': 'hostalkyai@123',
+    'johnsmith': 'password123',
 }
 
 # Dummy user roles
 user_roles = {
-    'username': 'admin'
+    'brookeyangq': 'admin',
+    'johnsmith': 'user',
+}
+
+# Dummy contact list
+contacts = {
+    'admin': [
+        {'name': 'Alice', 'email': 'alice@example.com'},
+        {'name': 'Bob', 'email': 'bob@example.com'}
+    ],
+    'user': [
+        {'name': 'Charlie', 'email': 'charlie@example.com'},
+        {'name': 'David', 'email': 'david@example.com'}
+    ]
 }
 
 @app.route('/login', methods=['POST'])
@@ -46,7 +59,7 @@ def login():
     password = data['password']
 
     if username in users and users[username] == password:
-        token = jwt.encode({'username': username, 'exp': datetime.datetime.now() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
+        token = jwt.encode({'username': username, 'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)}, app.config['SECRET_KEY'], algorithm='HS256')
         return jsonify({'token': token})
 
     return jsonify({'message': 'Invalid credentials'}), 401
@@ -58,10 +71,12 @@ def protected():
         return jsonify({'message': 'Token is missing'}), 401
 
     try:
-        data = jwt.decode(token, app.config['SECRET_KEY'])
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         username = data['username']
-        if username in user_roles and user_roles[username] == 'admin':
-            return jsonify({'message': 'Welcome to the protected route, admin!'})
+        if username in user_roles:
+            role = user_roles[username]
+            user_contacts = contacts.get(role, [])
+            return jsonify({'message': f'Welcome {username}!', 'contacts': user_contacts})
         else:
             return jsonify({'message': 'You do not have permission to access this route'}), 403
 
@@ -69,8 +84,6 @@ def protected():
         return jsonify({'message': 'Token has expired'}), 401
     except jwt.InvalidTokenError:
         return jsonify({'message': 'Invalid token'}), 401
-
-
 
 
 # ----------- Start of Security Measures for Prompt Injections -----------------------
