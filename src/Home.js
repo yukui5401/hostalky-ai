@@ -23,11 +23,14 @@ const Home = () => {
         if (response.ok) {
             messageElement.textContent = 'Login successful!';
             console.log('Token:', data.token);
-            // You can save the token in localStorage or cookies for later use
             localStorage.setItem('token', data.token);
         } else {
             messageElement.textContent = data.message;
         }
+    };
+
+    const logout = () => {
+        localStorage.removeItem('token');
     };
 
     return (
@@ -36,11 +39,10 @@ const Home = () => {
                 <h1><u>HosTalky</u></h1>
                 <h3>Re-defining healthcare communications</h3>
                 <form id="loginForm">
-                    <label htmlFor="username">Username: </label>
-                    <input type="text" id="username" name="username"/><br/><br/>
-                    <label htmlFor="password">Password: </label>
-                    <input type="password" id="password" name="password"/><br/><br/>
-                    <button type="button" onClick={login}>Login</button>
+                    <input type="text" id="username" name="username" placeholder='Username'/><br/>
+                    <input type="password" id="password" name="password" placeholder='Password'/><br/><br/>
+                    <button type="button" onClick={login}>Login</button><br/>
+                    <button type="button" onClick={logout}>Logout</button>
                 </form>
 
                 <p id="message"></p>
@@ -50,6 +52,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-

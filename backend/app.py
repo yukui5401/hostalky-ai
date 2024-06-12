@@ -17,29 +17,24 @@ fs = 44100 # sample rate, for audio quality
 
 client = OpenAI()
 
-# initialize Flask app
 app = Flask(__name__)
-CORS(app) # enables CORS for all routes
+CORS(app)
 
 # ----------- User login/authentication endpoints ----------------------
-app.config['SECRET_KEY'] = "lobsterfish"  # Change this to your own secret key
+app.config['SECRET_KEY'] = "lobsterfish" 
 
-# Initialize the recipients list
 recipients = []
 
-# Dummy user database
 users = {
     'brookeyangq': 'hostalkyai@123',
     'danielsongq': 'remitbeeai@123',
 }
 
-# Dummy user roles
 user_roles = {
     'brookeyangq': 'hostalky',
     'danielsongq': 'remitbee',
 }
 
-# Dummy contact list
 contacts = {
     'hostalky': [
         {'label': 'ross', 'value': '&ross'},
@@ -62,7 +57,7 @@ def login():
     password = data['password']
 
     if username in users and users[username] == password:
-        token = jwt.encode({'username': username, 'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)}, app.config['SECRET_KEY'], algorithm='HS256')
+        token = jwt.encode({'username': username, 'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=20)}, app.config['SECRET_KEY'], algorithm='HS256')
         return jsonify({'token': token})
 
     return jsonify({'message': 'Invalid credentials'}), 401
@@ -71,6 +66,7 @@ def login():
 def protected():
     token = request.headers.get('Authorization')
     print(f"Token: {token}")
+    recipients.clear()
     if not token:
         return jsonify({'message': 'Token is missing'}), 401
 
@@ -80,7 +76,6 @@ def protected():
         if username in user_roles:
             role = user_roles[username]
             user_contacts = contacts.get(role, [])
-            recipients.clear()
             recipients.extend(user_contacts)
             return jsonify({'message': f'Welcome {username}!', 'contacts': user_contacts})
         else:
