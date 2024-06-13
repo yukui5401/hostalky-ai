@@ -21,7 +21,7 @@ const Home = () => {
         const data = await response.json();
 
         if (response.ok) {
-            messageElement.textContent = 'Login successful!';
+            messageElement.textContent = `${username} logged in!`;
             console.log('Token:', data.token);
             localStorage.setItem('token', data.token);
         } else {
@@ -30,7 +30,9 @@ const Home = () => {
     };
 
     const logout = () => {
+        const messageElement = document.getElementById('message');
         localStorage.removeItem('token');
+        messageElement.textContent = "Successfully logged out!";
     };
 
     return (
@@ -45,7 +47,7 @@ const Home = () => {
                     <button type="button" onClick={logout}>Logout</button>
                 </form>
 
-                <p id="message"></p>
+                <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
             </div>
         </>
     );

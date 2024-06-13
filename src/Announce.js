@@ -35,7 +35,6 @@ const Announce = () => {
     }, [selected]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const fetchData = async () => {
             try {
                 const response = await fetch("/protected", {

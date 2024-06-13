@@ -22,7 +22,6 @@ const Layout = () => {
   return (
     <>
         <header className="App-header">
-            <Outlet />
             <nav>
                 <h6>
                     <Link to="/">Home</Link> &emsp;&emsp;&emsp; / &emsp;&emsp;&emsp;
@@ -31,6 +30,7 @@ const Layout = () => {
                     <Link to="/announce">Announce</Link>
                 </h6>
             </nav>
+            <Outlet />
             <h6>Last refreshed: {data.date} </h6>
             <h6>Experience a positive working environment like never before with a dependable healthcare communication app</h6>
         </header>
