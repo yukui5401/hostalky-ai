@@ -147,7 +147,7 @@ const Notes = () => {
     return (
         <>
         {isViewNotesRoute ? (
-            <ViewNotes />
+            <ViewNotes token={token} username={username} />
         ) : (
             <div className="center">
                 <h2>Personal Notes</h2>

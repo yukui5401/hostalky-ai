@@ -62,6 +62,7 @@
   margin: 20px auto; /* Centering the content */
   font-family: Arial, sans-serif; /* Font style */
   font-size: 18px;
+  min-width: 30vw;
 }
 
 .styled-content h3 {
