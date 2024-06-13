@@ -3,6 +3,7 @@ import { MultiSelect } from "react-multi-select-component";
 
 const Announce = () => {
     const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
 
     const [selected, setSelected] = useState([]);
     const [recipients, setRecipients] = useState([]);
@@ -167,7 +168,7 @@ const Announce = () => {
         });
         if (response.ok) {
             const messageElement = document.getElementById('message');
-            messageElement.textContent = "Successfully saved to Announcements";
+            messageElement.textContent = `Successfully saved to: ${username}'s Announcements`;
             const responseData = await response.json();
             setData(responseData);
             console.log("It worked");

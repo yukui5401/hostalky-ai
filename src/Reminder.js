@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 const Reminder = () => {
     const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
 
     useEffect(() => {
         const btnStart = document.querySelector('button[name="record"]');
@@ -127,7 +128,7 @@ const Reminder = () => {
         });
         if (response.ok) {
             const messageElement = document.getElementById('message');
-            messageElement.textContent = "Successfully saved to Reminders";
+            messageElement.textContent = `Successfully saved to: ${username}'s Reminders`;
             const responseData = await response.json();
             setData(responseData);
             console.log("It worked");

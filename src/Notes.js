@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 
 const Notes = () => {
     const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
 
     useEffect(() => {
         const btnStart = document.querySelector('button[name="record"]');
@@ -128,7 +129,7 @@ const Notes = () => {
         });
         if (response.ok) {
             const messageElement = document.getElementById('message');
-            messageElement.textContent = "Successfully saved to Notes";
+            messageElement.textContent = `Successfully saved to: ${username}'s Notes`;
             const responseData = await response.json();
             setData(responseData);
             console.log("It worked");
