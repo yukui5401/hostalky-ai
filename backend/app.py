@@ -284,6 +284,36 @@ def get_announce():
     if not title.strip() or not summary.strip() or not id_list:
         return jsonify({'title': 'Missing details', 'summary': 'All three title, summary, and list of &CareIDs are required'})
     
+    token = request.headers.get('Authorization')
+    print(f"Token: {token}")
+    if token:
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            username = data['username']
+            if username in user_roles:
+                role = user_roles[username]
+                user_announce[role].append(
+                    {
+                        "title": title,
+                        "summary": summary,
+                        "id_list": id_list
+                    }
+                )
+                print(user_announce)
+                return jsonify({
+                    'message': f'Saved announce for {username}!',
+                    'title': '',
+                    'summary': '',
+                    'id_list': []
+                    })
+            else:
+                return jsonify({'message': 'You do not have permission to access this route'}), 403
+
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Invalid token'}), 401
+    
     # data processing
     response = set_announce(title, summary, id_list)
 

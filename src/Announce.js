@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { MultiSelect } from "react-multi-select-component";
 
 const Announce = () => {
+    const token = localStorage.getItem('token');
+
     const [selected, setSelected] = useState([]);
     const [recipients, setRecipients] = useState([]);
     const [formSubmitted, setFormSubmitted] = useState(false);
@@ -153,6 +155,25 @@ const Announce = () => {
             };
         }
     }, []);
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+        const response = await fetch("/announce", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        if (response.ok) {
+            const responseData = await response.json();
+            setData(responseData);
+            console.log("It worked");
+        } else {
+            console.error("Failed to submit");
+        }
+    };
     
 
     return (
@@ -204,10 +225,12 @@ const Announce = () => {
                 <button type="submit">Summarize</button>
             </form>
             <div className="styled-content">
-                <p className={!data.id_list ? "placeholder" : ""}>{`To: ${JSON.stringify(data.id_list)}` || "Recipients"}</p>
+                <p className={!data.id_list ? "placeholder" : ""}>{JSON.stringify(data.id_list) || "Recipients"}</p>
                 <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
                 <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
             </div>
+            <button type="button" onClick={handleSave}>Save & Submit</button>
+
         </div>
     );
 };
