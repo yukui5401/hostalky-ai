@@ -51,6 +51,16 @@ user_notes = {
     'remitbee': []
 }
 
+user_reminder = {
+    'hostalky': [],
+    'remitbee': []
+}
+
+user_announce = {
+    'hostalky': [],
+    'remitbee': []
+}
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -177,7 +187,11 @@ def get_note():
                     }
                 )
                 print(user_notes)
-                return jsonify({'message': f'Saved notes for {username}!'})
+                return jsonify({
+                    'message': f'Saved notes for {username}!',
+                    'title': '',
+                    'summary': ''
+                    })
             else:
                 return jsonify({'message': 'You do not have permission to access this route'}), 403
 
@@ -215,6 +229,36 @@ def get_reminder():
 
     if not title.strip() or not summary.strip() or not date_time:
         return jsonify({'title': 'Missing details', 'summary': 'All three title, summary, and date_time are required'})
+    
+    token = request.headers.get('Authorization')
+    print(f"Token: {token}")
+    if token:
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            username = data['username']
+            if username in user_roles:
+                role = user_roles[username]
+                user_reminder[role].append(
+                    {
+                        "title": title,
+                        "summary": summary,
+                        "date_time": date_time
+                    }
+                )
+                print(user_reminder)
+                return jsonify({
+                    'message': f'Saved reminder for {username}!',
+                    'title': '',
+                    'summary': '',
+                    'date_time': ''
+                    })
+            else:
+                return jsonify({'message': 'You do not have permission to access this route'}), 403
+
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Invalid token'}), 401
     
     # data processing
     response = set_reminder(title, summary, date_time)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 const Reminder = () => {
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
         const btnStart = document.querySelector('button[name="record"]');
@@ -114,7 +115,25 @@ const Reminder = () => {
         }
     };
 
-    
+    const handleSave = async (e) => {
+        e.preventDefault();
+        const response = await fetch("/reminder", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        if (response.ok) {
+            const responseData = await response.json();
+            setData(responseData);
+            console.log("It worked");
+        } else {
+            console.error("Failed to submit");
+        }
+    };
+
     return (
         <>
         <div className="center">
@@ -160,9 +179,14 @@ const Reminder = () => {
                 <button type="submit">Summarize</button>
             </form>
 
-            <h3>{data.title}</h3>
-            <p>{data.summary}</p>
-            <p>{data.date_time}</p>
+            <div className="styled-content">
+                <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
+                <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
+                <br/>
+                <p className={!data.date_time ? "placeholder" : ""}>{data.date_time || "Date and Time"}</p>
+            </div>
+            <button type="button" onClick={handleSave}>Save & Submit</button>
+
         </div>
         </>
     )

@@ -164,18 +164,20 @@ const Notes = () => {
                     name="summary"
                     value={data.summary}
                     onChange={handleChange}
-                    placeholder="Summary"
+                    placeholder="Description"
                     cols="80"
                     rows="10"
                     required
                 />
                 <br />
                 <button type="submit">Summarize</button><br/>
-                <button type="button" onClick={handleSave}>Save & Submit</button>
             </form>
 
-            <h3>{data.title}</h3>
-            <p>{data.summary}</p>
+            <div className="styled-content">
+                <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
+                <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
+            </div>
+            <button type="button" onClick={handleSave}>Save & Submit</button>
         </div>
             
         </>

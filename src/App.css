@@ -52,3 +52,36 @@
   margin: 0 auto;
   width: 30%;
 }
+
+.styled-content {
+  border: 1px solid #333; /* Border color and width */
+  background-color: #f9f9f9; /* Background color */
+  padding: 20px; /* Space inside the border */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Shadow for a 3D effect */
+  max-width: 80vw; /* Maximum width of the content box */
+  margin: 20px auto; /* Centering the content */
+  font-family: Arial, sans-serif; /* Font style */
+  font-size: 18px;
+}
+
+.styled-content h3 {
+  margin-top: 0; 
+}
+
+.styled-content p {
+  font-size: 16px; /* Font size for paragraphs */
+  text-align: left; /* Left align text */
+}
+
+/* Styles for placeholders */
+textarea::placeholder {
+  color: #888; /* Placeholder text color */
+  font-style: italic; /* Placeholder text style */
+}
+
+/* Styles for greyed out default text in styled-content */
+.placeholder {
+  color: #888; /* Grey color for placeholder text */
+  font-style: italic; /* Italic style for placeholder text */
+}

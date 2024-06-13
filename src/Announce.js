@@ -6,7 +6,7 @@ const Announce = () => {
     const [recipients, setRecipients] = useState([]);
     const [formSubmitted, setFormSubmitted] = useState(false);
     const [data, setData] = useState({
-        id_list: [],
+        id_list: "",
         title: "",
         summary: "",
     });
@@ -203,9 +203,11 @@ const Announce = () => {
                 <br />
                 <button type="submit">Summarize</button>
             </form>
-            <p>JSON recipient data: {JSON.stringify(data.id_list)}</p>
-            <h3>{data.title}</h3>
-            <p>{data.summary}</p>
+            <div className="styled-content">
+                <p className={!data.id_list ? "placeholder" : ""}>{`To: ${JSON.stringify(data.id_list)}` || "Recipients"}</p>
+                <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
+                <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
+            </div>
         </div>
     );
 };
