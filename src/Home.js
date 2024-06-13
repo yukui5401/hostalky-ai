@@ -21,7 +21,7 @@ const Home = () => {
         const data = await response.json();
 
         if (response.ok) {
-            messageElement.textContent = `${username} logged in!`;
+            messageElement.textContent = `Successfully logged as: ${username}`;
             console.log('Token:', data.token);
             localStorage.setItem('token', data.token);
         } else {

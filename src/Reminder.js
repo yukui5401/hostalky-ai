@@ -126,6 +126,8 @@ const Reminder = () => {
             body: JSON.stringify(data)
         });
         if (response.ok) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = "Successfully saved to Reminders";
             const responseData = await response.json();
             setData(responseData);
             console.log("It worked");
@@ -186,6 +188,7 @@ const Reminder = () => {
                 <p className={!data.date_time ? "placeholder" : ""}>{data.date_time || "Date and Time"}</p>
             </div>
             <button type="button" onClick={handleSave}>Save & Submit</button>
+            <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
 
         </div>
         </>

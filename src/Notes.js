@@ -127,6 +127,8 @@ const Notes = () => {
             body: JSON.stringify(data)
         });
         if (response.ok) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = "Successfully saved to Notes";
             const responseData = await response.json();
             setData(responseData);
             console.log("It worked");
@@ -178,6 +180,7 @@ const Notes = () => {
                 <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
             </div>
             <button type="button" onClick={handleSave}>Save & Submit</button>
+            <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
         </div>
             
         </>
