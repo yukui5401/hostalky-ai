@@ -10,6 +10,7 @@ import Announce from "./Announce";
 import NoPage from "./NoPage";
 import ViewNotes from "./ViewNotes";
 import ViewReminder from "./ViewReminder";
+import ViewAnnounce from "./ViewAnnounce";
 
 export default function App() {
   return (
@@ -23,7 +24,9 @@ export default function App() {
           <Route path="reminder" element={<Reminder />}>
             <Route path="view_reminder" element={<ViewReminder />} />
           </Route>
-          <Route path="announce" element={<Announce />} />
+          <Route path="announce" element={<Announce />}>
+            <Route path="view_announce" element={<ViewAnnounce />} />
+          </Route>
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>

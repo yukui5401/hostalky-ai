@@ -1,7 +1,12 @@
+import { Outlet, Link, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { MultiSelect } from "react-multi-select-component";
+import ViewAnnounce from "./ViewAnnounce";
 
 const Announce = () => {
+    const location = useLocation();
+    const isViewAnnounceRoute = location.pathname === "/announce/view_announce";
+
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
 
@@ -179,62 +184,72 @@ const Announce = () => {
     
 
     return (
-        <div className="center">
-            <h2>Announcement</h2>
-            <audio id="audio" controls></audio>
-            <br></br>
-            <button name="record">Record</button> &emsp;
-            <button name="stop">Stop</button>
-            <hr></hr>
+        <>
+        {isViewAnnounceRoute ? (
+            <ViewAnnounce token={token} username={username} />
+        ) : (
+            <div className="center">
+                <h2>Announcement</h2>
+                <audio id="audio" controls></audio>
+                <br></br>
+                <button name="record">Record</button> &emsp;
+                <button name="stop">Stop</button>
+                <hr></hr>
 
-            <form onSubmit={handleSubmit}>
-                <div className="recipients-style">
-                    <h6>
-                        <MultiSelect
-                            options={recipients}
-                            value={selected}
-                            onChange={setSelected}
-                            labelledBy="Select"
-                            overrideStrings={{ "selectSomeItems": "Select recipients"}}
-                            required
-                        />
-                        {formSubmitted && selected.length === 0 && (
-                            <div style={{ color: 'red' }}><br />Please select at least one recipient.</div>
-                        )}
-                    </h6>
+                <form onSubmit={handleSubmit}>
+                    <div className="recipients-style">
+                        <h6>
+                            <MultiSelect
+                                options={recipients}
+                                value={selected}
+                                onChange={setSelected}
+                                labelledBy="Select"
+                                overrideStrings={{ "selectSomeItems": "Select recipients"}}
+                                required
+                            />
+                            {formSubmitted && selected.length === 0 && (
+                                <div style={{ color: 'red' }}><br />Please select at least one recipient.</div>
+                            )}
+                        </h6>
+                    </div>
+
+                    <textarea
+                        type="text"
+                        name="title"
+                        value={data.title}
+                        onChange={handleChange}
+                        placeholder="Title"
+                        cols="60"
+                        required
+                    />
+                    <br />
+                    <textarea
+                        name="summary"
+                        value={data.summary}
+                        onChange={handleChange}
+                        placeholder="Description"
+                        cols="80"
+                        rows="10"
+                        required
+                    />
+                    <br />
+                    <button type="submit">Summarize</button>
+                </form>
+                <div className="styled-content">
+                    <p className={!data.id_list ? "placeholder" : ""}>{JSON.stringify(data.id_list) || "Recipients"}</p>
+                    <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
+                    <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
                 </div>
+                <button type="button" onClick={handleSave}>Save & Submit</button>
+                <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
 
-                <textarea
-                    type="text"
-                    name="title"
-                    value={data.title}
-                    onChange={handleChange}
-                    placeholder="Title"
-                    cols="60"
-                    required
-                />
                 <br />
-                <textarea
-                    name="summary"
-                    value={data.summary}
-                    onChange={handleChange}
-                    placeholder="Description"
-                    cols="80"
-                    rows="10"
-                    required
-                />
-                <br />
-                <button type="submit">Summarize</button>
-            </form>
-            <div className="styled-content">
-                <p className={!data.id_list ? "placeholder" : ""}>{JSON.stringify(data.id_list) || "Recipients"}</p>
-                <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
-                <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
+                <nav>
+                    <Link to="view_announce">View Announcements</Link>
+                </nav>
             </div>
-            <button type="button" onClick={handleSave}>Save & Submit</button>
-            <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
-
-        </div>
+            )}
+        </>
     );
 };
 
