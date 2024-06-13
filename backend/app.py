@@ -287,6 +287,27 @@ def get_reminder():
 
     return response
 
+# view_reminder page
+@app.route('/view_reminder', methods=['POST'])
+def view_reminder():
+    token = request.headers.get('Authorization')
+    print(f"Token: {token}")
+    if not token:
+        return jsonify({'message': 'Token is missing'}), 401
+    try:
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        username = data['username']
+        if username in user_roles:
+            role = user_roles[username]
+            return jsonify(user_reminder[role])
+        else:
+            return jsonify({'message': 'You do not have permission to access this route'}), 403
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token'}), 401
+
 # announce page
 @app.route('/announce', methods=['POST'])
 def get_announce():

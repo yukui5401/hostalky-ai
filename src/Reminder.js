@@ -1,6 +1,11 @@
+import { Outlet, Link, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import ViewReminder from "./ViewReminder";
 
 const Reminder = () => {
+    const location = useLocation();
+    const isViewReminderRoute = location.pathname === "/reminder/view_reminder";
+
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
 
@@ -139,59 +144,67 @@ const Reminder = () => {
 
     return (
         <>
-        <div className="center">
-            <h2>Reminder</h2>
+        {isViewReminderRoute ? (
+            <ViewReminder token={token} username={username} />
+        ) : (
+            <div className="center">
+                <h2>Reminder</h2>
 
-            {/* record audio */}
-            <audio id="audio" controls></audio>
-            <br></br>
-            <button name="record">Record</button> &emsp;
-            <button name="stop">Stop</button>
-            <hr></hr>
+                {/* record audio */}
+                <audio id="audio" controls></audio>
+                <br></br>
+                <button name="record">Record</button> &emsp;
+                <button name="stop">Stop</button>
+                <hr></hr>
 
-            <form onSubmit={handleSubmit}>
-                <textarea
-                    type="text"
-                    name="title"
-                    value={data.title}
-                    onChange={handleChange}
-                    placeholder="Title"
-                    cols="60"
-                    required
-                />
-                <br />
-                <textarea
-                    name="summary"
-                    value={data.summary}
-                    onChange={handleChange}
-                    placeholder="Description"
-                    cols="80"
-                    rows="10"
-                    required
-                />
-                <br />
-                <h6>Select date & time:&nbsp;
-                    <input 
-                        type="datetime-local"
-                        name="date_time"
-                        value={data.date_time}
+                <form onSubmit={handleSubmit}>
+                    <textarea
+                        type="text"
+                        name="title"
+                        value={data.title}
                         onChange={handleChange}
-                        required 
+                        placeholder="Title"
+                        cols="60"
+                        required
                     />
-                </h6>
-                <button type="submit">Summarize</button>
-            </form>
+                    <br />
+                    <textarea
+                        name="summary"
+                        value={data.summary}
+                        onChange={handleChange}
+                        placeholder="Description"
+                        cols="80"
+                        rows="10"
+                        required
+                    />
+                    <br />
+                    <h6>Select date & time:&nbsp;
+                        <input 
+                            type="datetime-local"
+                            name="date_time"
+                            value={data.date_time}
+                            onChange={handleChange}
+                            required 
+                        />
+                    </h6>
+                    <button type="submit">Summarize</button>
+                </form>
 
-            <div className="styled-content">
-                <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
-                <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
-                <br/>
-                <p className={!data.date_time ? "placeholder" : ""}>{data.date_time || "Date and Time"}</p>
+                <div className="styled-content">
+                    <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
+                    <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
+                    <br/>
+                    <p className={!data.date_time ? "placeholder" : ""}>{data.date_time || "Date and Time"}</p>
+                </div>
+                <button type="button" onClick={handleSave}>Save & Submit</button>
+                <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
+
+                <br />
+                <nav>
+                    <Link to="view_reminder">View Reminders</Link>
+                </nav>
             </div>
-            <button type="button" onClick={handleSave}>Save & Submit</button>
-            <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
-
-        </div>
+        )}
         </>
     )
 };
