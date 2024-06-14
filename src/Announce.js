@@ -9,6 +9,8 @@ const Announce = () => {
 
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
+    
+    const [isRecording, setIsRecording] = useState(false);
 
     const [selected, setSelected] = useState([]);
     const [recipients, setRecipients] = useState([]);
@@ -104,6 +106,7 @@ const Announce = () => {
             let stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
             let mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.start();
+            setIsRecording(true);
 
             let chunks = [];
             mediaRecorder.ondataavailable = (e) => {
@@ -115,6 +118,7 @@ const Announce = () => {
             };
 
             mediaRecorder.onstop = async () => {
+                setIsRecording(false);
                 let blob = new Blob(chunks, { 'type': 'audio/mpeg; codecs=mp3' });
                 await uploadAudio(blob);
                 let url = URL.createObjectURL(blob);
@@ -194,7 +198,10 @@ const Announce = () => {
                 <br></br>
                 <button name="record">Record</button> &emsp;
                 <button name="stop">Stop</button>
-                <hr></hr>
+                <p style={{ color: 'red', fontSize: '16px', fontWeight: 'bold' }}>
+                    {isRecording ? "Recording in progress..." : ""}
+                </p>
+                <hr />
 
                 <form onSubmit={handleSubmit}>
                     <div className="recipients-style">

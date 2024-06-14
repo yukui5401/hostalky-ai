@@ -536,6 +536,8 @@ def match_recipients(id_list):
             sim_list = [] # similarity list 
             print(f"{key1}: {value1}")
             print()
+            if not recipients:
+                return
             for idx2, name2 in enumerate(recipients):
                 for key2, value2 in name2.items():
                     print(f"{key2}: {value2}")

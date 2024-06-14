@@ -9,6 +9,8 @@ const Reminder = () => {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
 
+    const [isRecording, setIsRecording] = useState(false);
+
     useEffect(() => {
         const btnStart = document.querySelector('button[name="record"]');
         const btnStop = document.querySelector('button[name="stop"]');
@@ -24,6 +26,7 @@ const Reminder = () => {
                 let stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                 let mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
+                setIsRecording(true);
 
                 let chunks = [];
                 mediaRecorder.ondataavailable = (e) => {
@@ -35,6 +38,7 @@ const Reminder = () => {
                 };
 
                 mediaRecorder.onstop = async () => {
+                    setIsRecording(false);
                     let blob = new Blob(chunks, { 'type': 'audio/mpeg; codecs=mp3' });
                     // options:
                     // audio/ogg; codecs=opus
@@ -155,7 +159,10 @@ const Reminder = () => {
                 <br></br>
                 <button name="record">Record</button> &emsp;
                 <button name="stop">Stop</button>
-                <hr></hr>
+                <p style={{ color: 'red', fontSize: '16px', fontWeight: 'bold' }}>
+                    {isRecording ? "Recording in progress..." : ""}
+                </p>
+                <hr />
 
                 <form onSubmit={handleSubmit}>
                     <textarea
