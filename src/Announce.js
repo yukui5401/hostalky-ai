@@ -236,7 +236,12 @@ const Announce = () => {
                     <button type="submit">Summarize</button>
                 </form>
                 <div className="styled-content">
-                    <p className={!data.id_list ? "placeholder" : ""}>{JSON.stringify(data.id_list) || "Recipients"}</p>
+                    <p className={!data.id_list ? "placeholder" : ""}>
+                        To: {data.id_list ? data.id_list.map((item) => {
+                        const firstKey = Object.keys(item)[0];
+                        return item[firstKey];
+                        }).join(', ') : "Recipients"}
+                    </p>
                     <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
                     <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
                 </div>

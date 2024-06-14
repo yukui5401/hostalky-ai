@@ -568,7 +568,7 @@ def transcribe(path):
         'summary':transcript.text,
     }) 
 
-    # determine notes/reminder/annouce path 
+    # determine notes/reminder/announce path 
     print(request.path)
     if request.path == "/record":
         response = rephrase("", transcript.text)

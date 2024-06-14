@@ -48,6 +48,14 @@ const ViewAnnounce = (props) => {
                 announce.slice().reverse().map((note, index) => (
                 <div key={index}>
                     <hr />
+                    {note.id_list && note.id_list.length > 0 && (
+                        <p>
+                            To: {note.id_list.map((item, idx) => {
+                                const firstKey = Object.keys(item)[0];
+                                return item[firstKey];
+                            }).join(', ')}
+                        </p>
+                    )}
                     <h4>{note.title}</h4>
                     <p>{note.summary}</p>
                 </div>
