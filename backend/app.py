@@ -170,7 +170,7 @@ def get_note():
     summary = data.get('summary')
 
     if not title.strip() or not summary.strip():
-        return jsonify({'title': 'Missing details', 'summary': 'Both title and summary are required'})
+        return jsonify({'error': 'All fields need to be filled'}), 400
     
     token = request.headers.get('Authorization')
     print(f"Token: {token}")
@@ -188,17 +188,17 @@ def get_note():
                 )
                 print(user_notes)
                 return jsonify({
-                    'message': f'Saved notes for {username}!',
+                    'message': f"Successfully saved to: {username}'s Notes",
                     'title': '',
                     'summary': ''
                     })
             else:
-                return jsonify({'message': 'You do not have permission to access this route'}), 403
+                return jsonify({'error': 'You do not have permission to access this route'}), 403
 
         except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired'}), 401
+            return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
-            return jsonify({'message': 'Invalid token'}), 401
+            return jsonify({'error': 'Invalid token'}), 401
 
     
     # data processing
@@ -250,7 +250,7 @@ def get_reminder():
     print(date_time)
 
     if not title.strip() or not summary.strip() or not date_time:
-        return jsonify({'title': 'Missing details', 'summary': 'All three title, summary, and date_time are required'})
+        return jsonify({'error': 'All fields need to be filled'}), 400
     
     token = request.headers.get('Authorization')
     print(f"Token: {token}")
@@ -269,18 +269,18 @@ def get_reminder():
                 )
                 print(user_reminder)
                 return jsonify({
-                    'message': f'Saved reminder for {username}!',
+                    'message': f"Successfully saved to: {username}'s Reminders",
                     'title': '',
                     'summary': '',
                     'date_time': ''
                     })
             else:
-                return jsonify({'message': 'You do not have permission to access this route'}), 403
+                return jsonify({'error': 'You do not have permission to access this route'}), 403
 
         except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired'}), 401
+            return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
-            return jsonify({'message': 'Invalid token'}), 401
+            return jsonify({'error': 'Invalid token'}), 401
     
     # data processing
     response = set_reminder(title, summary, date_time)
@@ -325,7 +325,7 @@ def get_announce():
     summary = data.get('summary')
 
     if not title.strip() or not summary.strip() or not id_list:
-        return jsonify({'title': 'Missing details', 'summary': 'All three title, summary, and list of &CareIDs are required'})
+        return jsonify({'error': 'All fields need to be filled'}), 400
     
     token = request.headers.get('Authorization')
     print(f"Token: {token}")
@@ -344,18 +344,18 @@ def get_announce():
                 )
                 print(user_announce)
                 return jsonify({
-                    'message': f'Saved announce for {username}!',
+                    'message': f"Successfully saved to: {username}'s Announcements",
                     'title': '',
                     'summary': '',
                     'id_list': []
                     })
             else:
-                return jsonify({'message': 'You do not have permission to access this route'}), 403
+                return jsonify({'error': 'You do not have permission to access this route'}), 403
 
         except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired'}), 401
+            return jsonify({'error': 'Token has expired'}), 401
         except jwt.InvalidTokenError:
-            return jsonify({'message': 'Invalid token'}), 401
+            return jsonify({'error': 'Invalid token'}), 401
     
     # data processing
     response = set_announce(title, summary, id_list)

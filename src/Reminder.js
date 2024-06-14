@@ -127,6 +127,9 @@ const Reminder = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
+        const messageElement = document.getElementById('message');
+        const errorElement = document.getElementById('error');
+
         const response = await fetch("/reminder", {
             method: "POST",
             headers: {
@@ -135,13 +138,16 @@ const Reminder = () => {
             },
             body: JSON.stringify(data)
         });
+        const responseData = await response.json();
+
         if (response.ok) {
-            const messageElement = document.getElementById('message');
-            messageElement.textContent = `Successfully saved to: ${username}'s Reminders`;
-            const responseData = await response.json();
+            errorElement.textContent = '';
+            messageElement.textContent = responseData.message;
             setData(responseData);
             console.log("It worked");
         } else {
+            messageElement.textContent = '';
+            errorElement.textContent = responseData.error;
             console.error("Failed to submit");
         }
     };
@@ -198,16 +204,16 @@ const Reminder = () => {
                         />
                     </h6>
                     <button className="custom-button" type="submit">Summarize</button>
-                </form>
-
-                <div className="styled-content">
-                    <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
-                    <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
-                    <br/>
-                    <p className={!data.date_time ? "placeholder" : ""}>{data.date_time || "Date and Time"}</p>
-                </div>
+                    <div className="styled-content">
+                        <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
+                        <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
+                        <br/>
+                        <p className={!data.date_time ? "placeholder" : ""}>{data.date_time || "Date and Time"}</p>
+                    </div>
                 <button className="custom-button" type="button" onClick={handleSave}>Save & Submit</button>
+                </form>
                 <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
+                <p id="error" style={{ color: 'red', fontSize: '16px', fontWeight: 'bold' }}></p>
 
                 <br />
                 <nav>

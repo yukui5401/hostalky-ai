@@ -8,8 +8,8 @@ const Home = () => {
     }, []);
 
     const handleLogin = async () => {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
         const messageElement = document.getElementById('message');
 
         const response = await fetch('/login', {
@@ -18,18 +18,19 @@ const Home = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: username,
-                password: password,
+                username: username.value,
+                password: password.value,
             }),
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            messageElement.textContent = `Successfully logged in as: ${username}`;
-            console.log('Username:', username);
+            password.value = "";
+            messageElement.textContent = `Successfully logged in as: ${username.value}`;
+            console.log('Username:', username.value);
             console.log('Token:', data.token);
-            localStorage.setItem('username', username);
+            localStorage.setItem('username', username.value);
             localStorage.setItem('token', data.token);
             setIsLoggedIn(true);
         } else {
@@ -44,12 +45,14 @@ const Home = () => {
     };
 
     const handleLogout = () => {
+        const usernameElement = document.getElementById('username');
+        const passwordElement = document.getElementById('password');
         const messageElement = document.getElementById('message');
-        const username = localStorage.getItem('username');
-        if (username) {
+        const token = localStorage.getItem('token');
+        if (token) {
+            usernameElement.value = "";
+            passwordElement.value = "";
             messageElement.textContent = `Successfully logged out`;
-        } else {
-            messageElement.textContent = 'Already logged out';
         }
     
         localStorage.removeItem('token');
