@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 
 const Home = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
 
-    const login = async () => {
+    useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem('token'));
+    }, []);
+
+    const handleLogin = async () => {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const messageElement = document.getElementById('message');
@@ -26,6 +31,7 @@ const Home = () => {
             console.log('Token:', data.token);
             localStorage.setItem('username', username);
             localStorage.setItem('token', data.token);
+            setIsLoggedIn(true);
         } else {
             messageElement.textContent = data.message;
         }
@@ -37,7 +43,7 @@ const Home = () => {
         }
     };
 
-    const logout = () => {
+    const handleLogout = () => {
         const messageElement = document.getElementById('message');
         const username = localStorage.getItem('username');
         if (username) {
@@ -48,7 +54,7 @@ const Home = () => {
     
         localStorage.removeItem('token');
         localStorage.removeItem('username');
-
+        setIsLoggedIn(false);
         // testing code
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
@@ -65,8 +71,11 @@ const Home = () => {
                 <form id="loginForm">
                     <input className="custom-textfield" type="text" id="username" name="username" placeholder='Username'/><br/>
                     <input className="custom-textfield" type="password" id="password" name="password" placeholder='Password'/><br/><br/>
-                    <button className="custom-button" type="button" onClick={login}>Login</button><br/>
-                    <button className="custom-button" type="button" onClick={logout}>Logout</button>
+                    {isLoggedIn ? (
+                        <button className="custom-button" type="button" onClick={handleLogout}>Logout</button>
+                    ) : (
+                        <button className="custom-button" type="button" onClick={handleLogin}>Login</button>
+                    )}
                 </form>
 
                 <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
