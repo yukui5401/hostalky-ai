@@ -157,8 +157,8 @@ const Reminder = () => {
                 {/* record audio */}
                 <audio id="audio" controls></audio>
                 <br></br>
-                <button name="record">Record</button> &emsp;
-                <button name="stop">Stop</button>
+                <button className="custom-button" name="record">Record</button> &emsp;
+                <button className="custom-button" name="stop">Stop</button>
                 <p style={{ color: 'red', fontSize: '16px', fontWeight: 'bold' }}>
                     {isRecording ? "Recording in progress..." : ""}
                 </p>
@@ -166,6 +166,7 @@ const Reminder = () => {
 
                 <form onSubmit={handleSubmit}>
                     <textarea
+                        className="custom-textfield"
                         type="text"
                         name="title"
                         value={data.title}
@@ -176,6 +177,7 @@ const Reminder = () => {
                     />
                     <br />
                     <textarea
+                        className="custom-textfield"
                         name="summary"
                         value={data.summary}
                         onChange={handleChange}
@@ -186,7 +188,8 @@ const Reminder = () => {
                     />
                     <br />
                     <h6>Select date & time:&nbsp;
-                        <input 
+                        <input
+                            className="custom-input" 
                             type="datetime-local"
                             name="date_time"
                             value={data.date_time}
@@ -194,7 +197,7 @@ const Reminder = () => {
                             required 
                         />
                     </h6>
-                    <button type="submit">Summarize</button>
+                    <button className="custom-button" type="submit">Summarize</button>
                 </form>
 
                 <div className="styled-content">
@@ -203,12 +206,12 @@ const Reminder = () => {
                     <br/>
                     <p className={!data.date_time ? "placeholder" : ""}>{data.date_time || "Date and Time"}</p>
                 </div>
-                <button type="button" onClick={handleSave}>Save & Submit</button>
+                <button className="custom-button" type="button" onClick={handleSave}>Save & Submit</button>
                 <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
 
                 <br />
                 <nav>
-                    <Link to="view_reminder">View Reminders</Link>
+                    <Link to="view_reminder" className="custom-link-alt">View Reminders</Link>
                 </nav>
             </div>
         )}

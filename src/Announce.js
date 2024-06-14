@@ -196,8 +196,8 @@ const Announce = () => {
                 <h2>Announcement</h2>
                 <audio id="audio" controls></audio>
                 <br></br>
-                <button name="record">Record</button> &emsp;
-                <button name="stop">Stop</button>
+                <button className="custom-button" name="record">Record</button> &emsp;
+                <button className="custom-button" name="stop">Stop</button>
                 <p style={{ color: 'red', fontSize: '16px', fontWeight: 'bold' }}>
                     {isRecording ? "Recording in progress..." : ""}
                 </p>
@@ -221,6 +221,7 @@ const Announce = () => {
                     </div>
 
                     <textarea
+                        className="custom-textfield"
                         type="text"
                         name="title"
                         value={data.title}
@@ -231,6 +232,7 @@ const Announce = () => {
                     />
                     <br />
                     <textarea
+                        className="custom-textfield"
                         name="summary"
                         value={data.summary}
                         onChange={handleChange}
@@ -240,7 +242,7 @@ const Announce = () => {
                         required
                     />
                     <br />
-                    <button type="submit">Summarize</button>
+                    <button className="custom-button" type="submit">Summarize</button>
                 </form>
                 <div className="styled-content">
                     <p className={!data.id_list ? "placeholder" : ""}>
@@ -252,12 +254,12 @@ const Announce = () => {
                     <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
                     <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
                 </div>
-                <button type="button" onClick={handleSave}>Save & Submit</button>
+                <button className="custom-button" type="button" onClick={handleSave}>Save & Submit</button>
                 <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
 
                 <br />
                 <nav>
-                    <Link to="view_announce">View Announcements</Link>
+                    <Link to="view_announce" className="custom-link-alt">View Announcements</Link>
                 </nav>
             </div>
             )}

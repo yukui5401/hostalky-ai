@@ -24,10 +24,10 @@ const Layout = () => {
         <header className="App-header">
             <nav>
                 <h6>
-                    <Link to="/">Home</Link> &emsp;&emsp;&emsp; / &emsp;&emsp;&emsp;
-                    <Link to="/notes">Notes</Link> &emsp;&emsp;&emsp; /  &emsp;&emsp;&emsp;
-                    <Link to="/reminder">Reminder</Link> &emsp;&emsp;&emsp; / &emsp;&emsp;&emsp;
-                    <Link to="/announce">Announce</Link>
+                    <Link to="/" className="custom-link">Home</Link> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                    <Link to="/notes" className="custom-link">Notes</Link> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                    <Link to="/reminder" className="custom-link">Reminder</Link> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                    <Link to="/announce" className="custom-link">Announce</Link>
                 </h6>
             </nav>
             <Outlet />

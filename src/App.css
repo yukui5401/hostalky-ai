@@ -85,3 +85,77 @@ textarea::placeholder {
   color: #888; /* Grey color for placeholder text */
   font-style: italic; /* Italic style for placeholder text */
 }
+
+.custom-link {
+  color: rgb(58, 58, 192);
+  text-decoration: none;
+  font-weight: bold;
+  padding: 5px 10px;
+  border: 1.5px solid rgb(58, 58, 192);
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.custom-link:hover {
+  color: rgb(255, 255, 255);
+  background-color: rgb(58, 58, 192);
+}
+
+.custom-link-alt {
+  color: #26586d; /* Blueish color */
+  text-decoration: none;
+  transition: color 0.4s ease; /* Added color transition */
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 2px solid #4f6d7a;
+}
+
+.custom-link-alt:hover {
+  color: #26586d; /* Darker blueish color */
+  background-color: #f0f0f0; /* Light gray background on hover */
+  border-color: #3d5a6f; /* Darker blueish border color on hover */
+}
+
+.custom-button {
+  color: white;
+  background-color: #4c5eaf;
+  border: none;
+  padding: 7px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease; /* Added background-color transition */
+}
+
+.custom-button:hover {
+  background-color: #5e73d3;
+  transform: scale(1.05); /* Scale the button slightly on hover */
+  transition: background-color 0.3s ease; /* Transition only for background color on hover */
+}
+
+.custom-textfield {
+  padding: 5px 15px;
+  border: 1px solid #b6c0f3; /* Blue border */
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border-color 0.3s ease; /* Add transition for border color */
+}
+
+.custom-textfield:focus {
+  outline: none;
+  border-color: #4c5eaf; /* Change border color on focus */
+}
+
+.custom-input {
+  padding: 8px 12px;
+  border: 1px solid #605aae; /* Purple-blue border color */
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.4s ease; /* Added border-color transition */
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #4b5285; /* Darker purple-blue border color on focus */
+}

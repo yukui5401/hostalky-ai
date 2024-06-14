@@ -159,8 +159,8 @@ const Notes = () => {
                 {/* record audio */}
                 <audio id="audio" controls></audio>
                 <br></br>
-                <button name="record">Record</button> &emsp;
-                <button name="stop">Stop</button>
+                <button className="custom-button" name="record">Record</button> &emsp;
+                <button className="custom-button" name="stop">Stop</button>
                 <p style={{ color: 'red', fontSize: '16px', fontWeight: 'bold' }}>
                     {isRecording ? "Recording in progress..." : ""}
                 </p>
@@ -169,6 +169,7 @@ const Notes = () => {
                 {/* submit form */}
                 <form onSubmit={handleSubmit}>
                     <textarea
+                        className="custom-textfield"
                         type="text"
                         name="title"
                         value={data.title}
@@ -179,6 +180,7 @@ const Notes = () => {
                     />
                     <br />
                     <textarea
+                        className="custom-textfield"
                         name="summary"
                         value={data.summary}
                         onChange={handleChange}
@@ -188,19 +190,19 @@ const Notes = () => {
                         required
                     />
                     <br />
-                    <button type="submit">Summarize</button><br/>
+                    <button className="custom-button" type="submit">Summarize</button><br/>
                 </form>
 
                 <div className="styled-content">
                     <h3 className={!data.title ? "placeholder" : ""}>{data.title || "Title"}</h3>
                     <p className={!data.summary ? "placeholder" : ""}>{data.summary || "Description"}</p>
                 </div>
-                <button type="button" onClick={handleSave}>Save & Submit</button>
+                <button className="custom-button" type="button" onClick={handleSave}>Save & Submit</button>
                 <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
 
                 <br />
                 <nav>
-                    <Link to="view_notes">View Notes</Link>
+                    <Link to="view_notes" className="custom-link-alt">View Notes</Link>
                 </nav>
             </div>
         )}

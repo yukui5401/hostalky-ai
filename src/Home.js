@@ -63,10 +63,10 @@ const Home = () => {
                 <h1><u>HosTalky</u></h1>
                 <h3>Re-defining healthcare communications</h3>
                 <form id="loginForm">
-                    <input type="text" id="username" name="username" placeholder='Username'/><br/>
-                    <input type="password" id="password" name="password" placeholder='Password'/><br/><br/>
-                    <button type="button" onClick={login}>Login</button><br/>
-                    <button type="button" onClick={logout}>Logout</button>
+                    <input className="custom-textfield" type="text" id="username" name="username" placeholder='Username'/><br/>
+                    <input className="custom-textfield" type="password" id="password" name="password" placeholder='Password'/><br/><br/>
+                    <button className="custom-button" type="button" onClick={login}>Login</button><br/>
+                    <button className="custom-button" type="button" onClick={logout}>Logout</button>
                 </form>
 
                 <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
