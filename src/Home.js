@@ -2,13 +2,18 @@ import React, { useState, useEffect } from "react";
 
 const Home = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+    const [username, setUsername] = useState(localStorage.getItem('username') || null);
 
     useEffect(() => {
-        setIsLoggedIn(!!localStorage.getItem('token'));
-    }, []);
+        if (isLoggedIn) {
+            setUsername(localStorage.getItem('username'));
+        } else {
+            setUsername(null);
+        }
+    }, [isLoggedIn]);
 
     const handleLogin = async () => {
-        const username = document.getElementById('username');
+        const usernameInput = document.getElementById('username');
         const password = document.getElementById('password');
         const messageElement = document.getElementById('message');
 
@@ -18,7 +23,7 @@ const Home = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: username.value,
+                username: usernameInput.value,
                 password: password.value,
             }),
         });
@@ -27,10 +32,10 @@ const Home = () => {
 
         if (response.ok) {
             password.value = "";
-            messageElement.textContent = `Successfully logged in as: ${username.value}`;
-            console.log('Username:', username.value);
+            messageElement.textContent = `Successfully logged in as: ${usernameInput.value}`;
+            console.log('Username:', usernameInput.value);
             console.log('Token:', data.token);
-            localStorage.setItem('username', username.value);
+            localStorage.setItem('username', usernameInput.value);
             localStorage.setItem('token', data.token);
             setIsLoggedIn(true);
         } else {
@@ -80,8 +85,9 @@ const Home = () => {
                         <button className="custom-button" type="button" onClick={handleLogin}>Login</button>
                     )}
                 </form>
-
+                <p style={{fontSize: '20px'}}>{username ? `Logged in as: ${username}` : 'Not logged in'}</p>
                 <p id="message" style={{ color: 'blue', fontSize: '16px', fontWeight: 'bold' }}></p>
+
             </div>
         </>
     );

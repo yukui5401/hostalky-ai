@@ -16,9 +16,11 @@ const ViewReminder = (props) => {
                 "Authorization": token
             }
         })
-        .then((response) => {
+        .then(async (response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                const errorData = await response.json();
+                const errorMessage = errorData.error || "Network response was not ok";
+                throw new Error(errorMessage);
             }
             return response.json();
         })
@@ -30,7 +32,7 @@ const ViewReminder = (props) => {
             setError(error);
             setLoading(false);
         });
-    }, []);
+    }, [token]);
 
     if (loading) {
         return <div>Loading...</div>;

@@ -214,7 +214,7 @@ def view_note():
     token = request.headers.get('Authorization')
     print(f"Token: {token}")
     if not token:
-        return jsonify({'message': 'Token is missing'}), 401
+        return jsonify({'error': 'Token is missing'}), 401
     try:
         data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         username = data['username']
@@ -222,12 +222,12 @@ def view_note():
             role = user_roles[username]
             return jsonify(user_notes[role])
         else:
-            return jsonify({'message': 'You do not have permission to access this route'}), 403
+            return jsonify({'error': 'You do not have permission to access this route'}), 403
 
     except jwt.ExpiredSignatureError:
-        return jsonify({'message': 'Token has expired'}), 401
+        return jsonify({'error': 'Token has expired'}), 401
     except jwt.InvalidTokenError:
-        return jsonify({'message': 'Invalid token'}), 401
+        return jsonify({'error': 'Invalid token'}), 401
 
         
 # reminder page
@@ -293,7 +293,7 @@ def view_reminder():
     token = request.headers.get('Authorization')
     print(f"Token: {token}")
     if not token:
-        return jsonify({'message': 'Token is missing'}), 401
+        return jsonify({'error': 'Token is missing'}), 401
     try:
         data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         username = data['username']
@@ -301,12 +301,12 @@ def view_reminder():
             role = user_roles[username]
             return jsonify(user_reminder[role])
         else:
-            return jsonify({'message': 'You do not have permission to access this route'}), 403
+            return jsonify({'error': 'You do not have permission to access this route'}), 403
 
     except jwt.ExpiredSignatureError:
-        return jsonify({'message': 'Token has expired'}), 401
+        return jsonify({'error': 'Token has expired'}), 401
     except jwt.InvalidTokenError:
-        return jsonify({'message': 'Invalid token'}), 401
+        return jsonify({'error': 'Invalid token'}), 401
 
 # announce page
 @app.route('/announce', methods=['POST'])
@@ -368,7 +368,7 @@ def view_announce():
     token = request.headers.get('Authorization')
     print(f"Token: {token}")
     if not token:
-        return jsonify({'message': 'Token is missing'}), 401
+        return jsonify({'error': 'Token is missing'}), 401
     try:
         data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         username = data['username']
@@ -376,12 +376,12 @@ def view_announce():
             role = user_roles[username]
             return jsonify(user_announce[role])
         else:
-            return jsonify({'message': 'You do not have permission to access this route'}), 403
+            return jsonify({'error': 'You do not have permission to access this route'}), 403
 
     except jwt.ExpiredSignatureError:
-        return jsonify({'message': 'Token has expired'}), 401
+        return jsonify({'error': 'Token has expired'}), 401
     except jwt.InvalidTokenError:
-        return jsonify({'message': 'Invalid token'}), 401
+        return jsonify({'error': 'Invalid token'}), 401
 
 # text-to-text elaboration
 def rephrase(title, summary):
