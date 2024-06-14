@@ -163,7 +163,7 @@ const Announce = () => {
                 button.removeEventListener('click', handleStartClick);
             };
         }
-    }, []);
+    }, [isViewAnnounceRoute]);
 
     const handleSave = async (e) => {
         e.preventDefault();

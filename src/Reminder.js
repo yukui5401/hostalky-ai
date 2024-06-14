@@ -89,7 +89,7 @@ const Reminder = () => {
         return () => {
             btnStart.removeEventListener('click', handleStartClick);
         };
-    }, []);
+    }, [isViewReminderRoute]);
 
 
     // useState for storing and using data

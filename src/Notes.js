@@ -90,7 +90,7 @@ const Notes = () => {
         return () => {
             btnStart.removeEventListener('click', handleStartClick);
         };
-    }, []);
+    }, [isViewNotesRoute]);
 
 
 
