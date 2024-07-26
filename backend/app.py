@@ -2,7 +2,6 @@ import re
 from transformers import pipeline
 
 import Levenshtein
-import requests
 import jwt
 
 import json
@@ -21,44 +20,44 @@ app = Flask(__name__)
 CORS(app)
 
 # ----------- User login/authentication endpoints ----------------------
-app.config['SECRET_KEY'] = "lobsterfish" 
+app.config['SECRET_KEY'] = "5f4e3c2b1a9d8e7f6g5h4i3j2k1l0m9n" 
 
 recipients = []
 
 users = {
-    'brookeyangq': 'hostalkyai@123',
-    'danielsongq': 'remitbeeai@123',
+    'user1': 'easypass@1',
+    'user2': 'easypass@2',
 }
 
 user_roles = {
-    'brookeyangq': 'hostalky',
-    'danielsongq': 'remitbee',
+    'user1': 'team1',
+    'user2': 'team2',
 }
 
 contacts = {
-    'hostalky': [
-        {'label': 'ross', 'value': '&ross'},
-        {'label': 'pratheepan', 'value': '&pratheepan'}
+    'team1': [
+        {'label': 'Sarah Johnson', 'value': '&imsarahjohnson'},
+        {'label': 'Michael Brown', 'value': '&themikebrown'}
     ],
-    'remitbee': [
-        {'label': 'neville', 'value': '&neville'},
-        {'label': 'yogi', 'value': '&yogi'}
+    'team2': [
+        {'label': 'Emily Davis', 'value': '&emilydaviss'},
+        {'label': 'James Wilson', 'value': '&jwilson4ever'}
     ]
 }
 
 user_notes = {
-    'hostalky': [],
-    'remitbee': []
+    'team1': [],
+    'team2': []
 }
 
 user_reminder = {
-    'hostalky': [],
-    'remitbee': []
+    'team1': [],
+    'team2': []
 }
 
 user_announce = {
-    'hostalky': [],
-    'remitbee': []
+    'team1': [],
+    'team2': []
 }
 
 @app.route('/login', methods=['POST'])
@@ -388,7 +387,7 @@ def rephrase(title, summary):
     messages = []
     if title == '': # retrieved through recording
         messages = [
-            {"role": "user", "content": f"Rephrase the following:\n'{summary}'"},
+            {"role": "user", "content": f"Rephrase the following content:\n'{summary}'"},
             {"role": "system", "content": "Return a JSON object with the following structure:\n { 'title': <title_content>, 'summary': <summary_content> }"},
         ]
     else:
@@ -398,7 +397,7 @@ def rephrase(title, summary):
         ]
     start_time = time.time()
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=messages,
         n=1,
         stop=None,
@@ -443,7 +442,7 @@ def set_reminder(title, summary, date_time): # implementation postponed
         return jsonify(response)
     
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=messages,
         n=1,
         stop=None,
@@ -488,7 +487,7 @@ def set_announce(title, summary, id_list):
         return jsonify(response)
     
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=messages,
         n=1,
         stop=None,
