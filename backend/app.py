@@ -8,13 +8,15 @@ import json
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from openai import OpenAI
+from dotenv import load_dotenv
+import openai
 import time
 import datetime
 
 fs = 44100 # sample rate, for audio quality
 
-client = OpenAI()
+load_dotenv()
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 app = Flask(__name__)
 CORS(app)
@@ -396,7 +398,7 @@ def rephrase(title, summary):
             {"role": "system", "content": "Return a JSON object with the following structure:\n { 'title': <title_content>, 'summary': <summary_content> }"},
         ]
     start_time = time.time()
-    response = client.chat.completions.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=messages,
         n=1,
@@ -441,7 +443,7 @@ def set_reminder(title, summary, date_time): # implementation postponed
         response["date_time"] = date_time
         return jsonify(response)
     
-    response = client.chat.completions.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=messages,
         n=1,
@@ -486,7 +488,7 @@ def set_announce(title, summary, id_list):
         response["id_list"] = id_list
         return jsonify(response)
     
-    response = client.chat.completions.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=messages,
         n=1,
@@ -556,7 +558,7 @@ def match_recipients(id_list):
 # API (paid) version #################
 def transcribe(path):
     audio_file = open(path, "rb")
-    transcript = client.audio.transcriptions.create(
+    transcript = openai.audio.transcriptions.create(
     model="whisper-1",
     file=audio_file,
     )
